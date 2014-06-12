@@ -22,31 +22,8 @@ import java.sql.*;
  *
  * @author Sunny Patel
  */
-public class schemachecker {
-    // tables
-    String tables[] = { "user",
-                    "hold",
-                    "product",
-                    "productprice",
-                    "productbarcode",
-                    "sale",
-                    "salesdata",
-                    "maincategory",
-                    "customer"
-    };    
-
-    // views
-    String views[] = { "quickkeys",
-                    "outstandingtransactions",
-                    "salesbyhour"
-    };
-    
-    // Routines
-    String routines[] = { "holdsale",
-                        "unholdsale",
-                        "updateproduct",
-                        "deleteproduct",
-    };
+public class schemachecker extends databaseschema {
+    String notfound = "";
     
     // Connection settings for the db
     Connection conn = null;
@@ -56,38 +33,47 @@ public class schemachecker {
     String user;
     String pass;
     
-    String[] checkTables() {
-        String tablesnotindb[] = new String[tables.length];
-        // Lets loop
-        for(int i = 0; i < tables.length; i++) {
-            int tablecols = 0;
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                conn = DriverManager.getConnection(url, user, pass);
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery("describe " + tables[i]);
-                while(rs.next()) {
-                    tablecols++;
-                }
-                if(tablecols > 0) {
-                    checkStructure(tables[i]);
-                } else {
-                    int currentsize = tablesnotindb.length;
-                    tablesnotindb[currentsize++] = tables[i];
-                }
-            } catch(Exception a) {
-                a.printStackTrace();
-                int currentsize = tablesnotindb.length;
-                tablesnotindb[currentsize++] = tables[i];
+    void checkTables() {
+        String tablesindb[][] = new String[tables.length][1];
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, pass);
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("show tables");
+            int count = 0;
+            while(rs.next()) {
+                tablesindb[count][0] = rs.getString("Field");
+                tablesindb[count][1] = "1";
+                count++;
             }
+            for(int i = 0; i < tables.length; i++) {
+                boolean found = false;
+                int ref = 0;
+                // Lets loop through and check if the tables in the database exist
+                for(int j = 0; j < tablesindb.length; j++) {
+                    if(tables[i].equals(tablesindb[j][0])) {
+                        found = true;
+                        ref = j;
+                    }
+                }
+                if(found == false) {
+                    tablesindb[ref][1] = "0";
+                    notfound = notfound + " \n" + tablesindb[ref][0];
+                }
+            }
+            System.out.println(notfound);            
+        } catch(Exception a) {
+            a.printStackTrace();
         }
-        
-        return tablesnotindb;
     }
     
     void checkStructure(String table) {
         try {
             // Do a describe of the table structure and see iof it works 
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, pass);
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("describe " + table);
         } catch(Exception e) {
             e.printStackTrace();
         }
