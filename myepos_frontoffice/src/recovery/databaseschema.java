@@ -22,17 +22,18 @@ package recovery;
  * @author Sunny Patel
  */
 public class databaseschema {
+    
     // tables
-    Object[][] tables[] = { {"user", user},
-                    {"hold", hold[][]},
-                    {"product", product[][],
-                    {"productprice", productprice[][]},
-                    {"productbarcode", productbarcode[][]},
-                    {"sale", sale[][]},
-                    {"salesdata", salesdata[][]},
-                    {"maincategory", maincategory[][]},
-                    {"customer", customer[][]}
-    };    
+    String tables[] = { "user",
+                    "hold",
+                    "product",
+                    "productprice",
+                    "productbarcode",
+                    "sale",
+                    "salesdata",
+                    "maincategory",
+                    "customer",
+    };
 
     // views
     String views[] = { "quickkeys",
@@ -47,13 +48,31 @@ public class databaseschema {
                         "deleteproduct",
     };
     
-    Mapsuer = {"id", "int",
-        "code", "varchar",
-        "enabled", "tinyint",
+    // Create the column info objects
+    String[][] userstruct = {{"id", "int"}, 
+                    {"code", "varchar(10)"}, 
+                    {"enabled", "tinyint(1)"},
+                    {"firstname", "varchar(50)"},
+                    {"lastname", "varchar(50)"},
+                    {"address", "varchar(128)"},
+                    {"phone", "bigint"}
     };
+
+    structure user = new structure("user", userstruct);
     
-    String hold[][] = {
-        {}
-    };
 }
 
+class structure {
+    private String TABLE_NAME;
+    private String[] COL_NAME;
+    private String[] COL_TYPE;
+    
+    public structure(String tablename, String[][] colinfo) {
+        TABLE_NAME = tablename;
+        for(int i = 0; i < colinfo.length; i++) {
+            COL_NAME[i] = colinfo[i][0];
+            COL_TYPE[i] = colinfo[i][1];
+        }
+    }
+    
+}
