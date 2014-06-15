@@ -18,6 +18,7 @@
 package recovery;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 import recovery.structure;
 /**
@@ -25,7 +26,7 @@ import recovery.structure;
  * @author Sunny Patel
  */
 public class schemachecker extends databaseschema {
-    String notfound = "";
+    ArrayList<String> notfound = new ArrayList<String>();
     
     // Connection settings for the db
     Connection conn = null;
@@ -47,6 +48,8 @@ public class schemachecker extends databaseschema {
     }
     
     void checkTables() {
+        // Clear the array List before we begin
+        notfound.clear();
         String tablesindb[][] = new String[tables.length][1];
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -55,7 +58,7 @@ public class schemachecker extends databaseschema {
             rs = stmt.executeQuery("show tables");
             int count = 0;
             while(rs.next()) {
-                tablesindb[count][0] = rs.getString("Field");
+                tablesindb[count][0] = rs.getString("1");
                 tablesindb[count][1] = "1";
                 count++;
             }
@@ -71,13 +74,12 @@ public class schemachecker extends databaseschema {
                 }
                 if(found == false) {
                     tablesindb[ref][1] = "0";
-                    notfound = notfound + " \n" + tablesindb[ref][0];
+                    notfound.add(tablesindb[ref][0]);
                 } else {
                     structure tableData = (structure) tables[i++];
                     checkStructure(tableData);
                 }
             }
-            System.out.println(notfound);            
         } catch(Exception a) {
             a.printStackTrace();
         }
@@ -105,9 +107,19 @@ public class schemachecker extends databaseschema {
     
     // Update Structure
     void updateStructure() {
+        checkTables();
         try {
             connection();
             stmt = conn.createStatement();
+            for(int i = 0; i < notfound.size(); i++) {
+                for(int j = 0; j < tables.length; j++) {
+                    if (tables[j].equals(notfound.get(i))) {
+                        
+                    }
+                    // Increment and jump object
+                    j++;
+                }
+            }
         } catch(Exception a) {
             
         }

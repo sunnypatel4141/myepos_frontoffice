@@ -108,9 +108,6 @@ class structure extends Object {
         }
     }
     
-    public structure(Object struct) {
-        
-    }
     public int colCount() {
         
         return COL_NAME.length;
