@@ -95,7 +95,7 @@ public class databaseschema {
     
 }
 
-class structure {
+class structure extends Object {
     private String TABLE_NAME;
     private String[] COL_NAME;
     private String[] COL_TYPE;

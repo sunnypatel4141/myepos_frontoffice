@@ -35,6 +35,17 @@ public class schemachecker extends databaseschema {
     String user;
     String pass;
     
+    void connection() {
+        if( conn == null ) {
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                conn = DriverManager.getConnection(url, user, pass);
+            } catch (Exception a) {
+                a.printStackTrace();
+            }
+        }
+    }
+    
     void checkTables() {
         String tablesindb[][] = new String[tables.length][1];
         try {
@@ -62,7 +73,7 @@ public class schemachecker extends databaseschema {
                     tablesindb[ref][1] = "0";
                     notfound = notfound + " \n" + tablesindb[ref][0];
                 } else {
-                    structure tableData = tables[i++];
+                    structure tableData = (structure) tables[i++];
                     checkStructure(tableData);
                 }
             }
@@ -86,8 +97,19 @@ public class schemachecker extends databaseschema {
                     System.out.println(tableName + ": " + field + " Does not exist in structure");
                 }
             }
+            rs.close();
         } catch(Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    // Update Structure
+    void updateStructure() {
+        try {
+            connection();
+            stmt = conn.createStatement();
+        } catch(Exception a) {
+            
         }
     }
 
