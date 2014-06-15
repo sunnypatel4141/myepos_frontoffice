@@ -23,18 +23,6 @@ package recovery;
  */
 public class databaseschema {
     
-    // tables
-    String tables[] = { "user",
-                    "hold",
-                    "product",
-                    "productprice",
-                    "productbarcode",
-                    "sale",
-                    "salesdata",
-                    "maincategory",
-                    "customer",
-    };
-
     // views
     String views[] = { "quickkeys",
                     "outstandingtransactions",
@@ -48,7 +36,8 @@ public class databaseschema {
                         "deleteproduct",
     };
     
-    // Create the column info objects
+    // Create a 2D String object containing the table structure 
+    // then create a strcuture object and add to the table
     String[][] userstruct = {{"id", "int"}, 
                     {"code", "varchar(10)"}, 
                     {"enabled", "tinyint(1)"},
@@ -59,6 +48,50 @@ public class databaseschema {
     };
 
     structure user = new structure("user", userstruct);
+    
+    String[][] holdstruct = null;
+    
+    structure hold = new structure("hold", holdstruct);
+    
+    String[][] productstruct = null;
+    
+    structure product = new structure("product", productstruct);
+    
+    String[][] productpricestruct = null;
+    
+    structure productprice = new structure("productprice", productpricestruct);
+    
+    String[][] productbarcodestruct = null;
+    
+    structure productbarcode = new structure("productbarcode", productbarcodestruct);
+    
+    String[][] salestruct = null;
+    
+    structure sale = new structure("sales", salestruct);
+    
+    String[][] salesdatastruct = null;
+    
+    structure salesdata = new structure("salesdata", salesdatastruct);
+    
+    String[][] maincategorystruct = null;
+    
+    structure maincategory = new structure("maincategory", maincategorystruct);
+    
+    String[][] customerstruct = null;
+    
+    structure customer = new structure("customer", customerstruct);
+    
+    // tables
+    Object tables[] = { "user", user,
+                    "hold", hold,
+                    "product", product,
+                    "productprice", productprice,
+                    "productbarcode", productbarcode,
+                    "sale", sale,
+                    "salesdata", salesdata,
+                    "maincategory", maincategory,
+                    "customer", customer
+    };
     
 }
 
@@ -75,4 +108,38 @@ class structure {
         }
     }
     
+    public structure(Object struct) {
+        
+    }
+    public int colCount() {
+        
+        return COL_NAME.length;
+    }
+    
+    public String colType(String colName) {
+        String retVal = "";
+        for(int i = 0; i < COL_NAME.length; i++) {
+            if(COL_NAME[i].equals(colName)) {
+                retVal = COL_TYPE[i];
+            }
+        }
+        
+        return retVal;
+    }
+    
+    public boolean colExists(String colname) {
+        boolean found = false;
+        for(int i = 0; i < COL_NAME.length; i++) {
+            if(COL_NAME[i].equals(colname)) {
+                found = true;
+            }
+        }
+        
+        return found;
+    }
+    
+    public String tableName() {
+        
+        return TABLE_NAME;
+    }
 }

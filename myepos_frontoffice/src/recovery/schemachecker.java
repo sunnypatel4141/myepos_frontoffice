@@ -18,6 +18,8 @@
 package recovery;
 
 import java.sql.*;
+
+import recovery.structure;
 /**
  *
  * @author Sunny Patel
@@ -59,6 +61,9 @@ public class schemachecker extends databaseschema {
                 if(found == false) {
                     tablesindb[ref][1] = "0";
                     notfound = notfound + " \n" + tablesindb[ref][0];
+                } else {
+                    structure tableData = tables[i++];
+                    checkStructure(tableData);
                 }
             }
             System.out.println(notfound);            
@@ -67,13 +72,20 @@ public class schemachecker extends databaseschema {
         }
     }
     
-    void checkStructure(String table) {
+    void checkStructure(structure table) {
         try {
+            String tableName = table.tableName();
             // Do a describe of the table structure and see iof it works 
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(url, user, pass);
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("describe " + table);
+            rs = stmt.executeQuery("describe " + tableName);
+            while( rs.next() ) {
+                String field = rs.getString("Field");
+                if (table.colExists(field) == false) {
+                    System.out.println(tableName + ": " + field + " Does not exist in structure");
+                }
+            }
         } catch(Exception e) {
             e.printStackTrace();
         }
