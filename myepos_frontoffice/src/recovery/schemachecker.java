@@ -47,7 +47,7 @@ public class schemachecker extends databaseschema {
         }
     }
     
-    void checkTables() {
+    public void checkTables() {
         // Clear the array List before we begin
         notfound.clear();
         String tablesindb[][] = new String[tables.length][1];
@@ -85,7 +85,7 @@ public class schemachecker extends databaseschema {
         }
     }
     
-    void checkStructure(structure table) {
+    public void checkStructure(structure table) {
         try {
             String tableName = table.tableName();
             // Do a describe of the table structure and see iof it works 
@@ -106,7 +106,7 @@ public class schemachecker extends databaseschema {
     }
     
     // Update Structure
-    void updateStructure() {
+    public void updateStructure() {
         checkTables();
         try {
             connection();

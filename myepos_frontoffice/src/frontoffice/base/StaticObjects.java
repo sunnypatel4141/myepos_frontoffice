@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package frontoffice;
-
 /**
  *
  * @author Sunny Patel
  */
-public class java {
-    
+
+package frontoffice.base;
+
+/**
+ *
+ * @author User
+ */
+public class StaticObjects {
+    //
+    // here static objets are declard to be used by the entire system
 }
