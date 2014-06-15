@@ -135,6 +135,16 @@ class structure extends Object {
         return found;
     }
     
+    public String[] columns() {
+        
+        return COL_NAME;
+    }
+    
+    public String[] columnTypes() {
+        
+        return COL_TYPE;
+    }
+    
     public String tableName() {
         
         return TABLE_NAME;

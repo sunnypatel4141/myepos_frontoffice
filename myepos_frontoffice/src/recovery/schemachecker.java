@@ -114,14 +114,29 @@ public class schemachecker extends databaseschema {
             for(int i = 0; i < notfound.size(); i++) {
                 for(int j = 0; j < tables.length; j++) {
                     if (tables[j].equals(notfound.get(i))) {
-                        
+                        String tableName = tables[j].toString();
+                        structure tableData = (structure) tables[j++];
+                        String[] cols = tableData.columns();
+                        String[] coltype = tableData.columnTypes();
+                        String sql = "Create table if not exists " + tableName + " (";
+                                for(int k = 0; k < tableData.colCount(); k++) {
+                                    sql += "`" + cols[k] + "` " + coltype[k] + ", ";
+                                }
+                                sql += ") ";
+                        boolean success = stmt.execute(sql);
+                        if ( success ) {
+                            System.out.println("table " + tableName + " created");
+                        } else {
+                            System.out.println("table " + tableName + " could not be created");
+                        }
+                    } else {
+                        // Increment and jump object
+                        j++;
                     }
-                    // Increment and jump object
-                    j++;
                 }
             }
         } catch(Exception a) {
-            
+            a.printStackTrace();
         }
     }
 
