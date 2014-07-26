@@ -34,6 +34,7 @@ public class databaseschema {
                         "unholdsale",
                         "updateproduct",
                         "deleteproduct",
+                        "findproduct",
     };
     
     // Create a 2D String object containing the table structure 
