@@ -1,4 +1,4 @@
-myepos_frontoffice
+MyEPoS Front Office
 ==================
 
 EPoS Software Front Office
