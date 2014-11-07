@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ * @author Sunny Patel
+ */
+
 package frontoffice.base;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,6 +38,7 @@ public class DBConnection extends XMLSettings {
     // Declare Default Objects
     public static Connection conn = null;
     public static Statement stmt = null;
+    public static PreparedStatement pstmt = null;
     public static ResultSet rs = null;
     String url = "jdbc:mysql://localhost:3306/epos";
     String un = "root";
@@ -59,15 +66,10 @@ public class DBConnection extends XMLSettings {
         String extun = Settings.get("userext").toString();
         String extpw = Settings.get("passext").toString();
         String exturl = Settings.get("urlext").toString();
+        // Lets process the password
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            if ( exturl.equals("") ) {
-                exturl = urlext;
-            } 
-            if ( extun.equals("") ) {
-                extun = unext;
-            }
-            connext = DriverManager.getConnection(exturl, extun, pwext);
+            connext = DriverManager.getConnection(exturl, extun, extpw);
         } catch(Exception a) {
             a.printStackTrace();
         }
@@ -82,7 +84,9 @@ public class DBConnection extends XMLSettings {
         // Convert integer password
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            conn = DriverManager.getConnection(url, user, password);
+            if ( conn == null ) {
+                conn = DriverManager.getConnection(url, user, password);
+            }
         } catch(Exception a) {
             a.printStackTrace();
         }

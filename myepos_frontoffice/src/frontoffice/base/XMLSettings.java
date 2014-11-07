@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ * @author Sunny Patel
+ */
+
 package frontoffice.base;
 
 import java.io.File;
@@ -31,7 +36,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import java.util.HashMap;
 
-public class XMLSettings {
+/**
+ *
+ * @author Family
+ */
+public class XMLSettings extends StaticObjects {
     
     public static HashMap Settings = new HashMap();
 
@@ -66,7 +75,7 @@ public class XMLSettings {
                             "weightScale", 
                             "printerCOM"
                         };
-
+    
     void loadSettings() {
         try {
             // Prepare the file for opening
