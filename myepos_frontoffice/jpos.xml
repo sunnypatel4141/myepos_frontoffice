@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JposEntries PUBLIC "-//JavaPOS//DTD//EN" "jpos/res/jcl.dtd">
+<JposEntries><JposEntry logicalName="Star TSP100 Cutter (TSP143)">
+    <creation factoryClass="com.starmicronics.starjavapos.ServiceInstanceFactory" serviceClass="com.starmicronics.starjavapos.CashDrawerService"/>
+    <vendor name="Star Micronics" url="www.starmicronics.com"/>
+    <jpos category="CashDrawer" version="1.9"/>
+    <product description="Printer controlled cash drawer" name="Star Micronics cash drawer controller" url="www.starmicronics.com"/>
+    <prop name="portName" type="String" value="tsp100lm:5&amp;10344491&amp;0&amp;1"/>
+    <prop name="portSettings" type="String" value=""/>
+    <prop name="ioTimeoutMillis" type="Integer" value="5000"/>
+    <prop name="controlPrimaryDrawer" type="Boolean" value="true"/>
+    <prop name="firePulseWidth" type="Long" value="200"/>
+    <prop name="sleepPulseWidth" type="Long" value="200"/>
+    <prop name="capStatus" type="Boolean" value="true"/>
+    <prop name="signalLevelHighWhenDrawerOpen" type="Boolean" value="true"/>
+</JposEntry>
+</JposEntries>
