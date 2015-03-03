@@ -52,7 +52,8 @@ THOUGHT::::: MAYBE THERE SHOULD BE A FLOAT HISTRY TABLE THAT KEEPS TRACK OF ALL 
 THE FLOAT SETTING SHOULD BE IN SYSTEMPREF table
 
 */
-public class FloatSettings extends MainMenu implements NumberPadEvent, ActionListener, MouseListener, FocusListener {
+public class FloatSettings extends MainMenu implements NumberPadEvent, 
+        ActionListener, MouseListener, FocusListener {
     // 
     JDialog frameFloatSettings = new JDialog(frame, "Float Settings", true);
     JDialog approveFrame = new JDialog(frameFloatSettings, "Login", true);
@@ -356,102 +357,3 @@ public class FloatSettings extends MainMenu implements NumberPadEvent, ActionLis
     }
     
 }
-
-
-/*
-    import java.awt.FlowLayout;
-    import java.awt.GridLayout;
-    import java.awt.event.ActionEvent;
-    import java.awt.event.ActionListener;
-    import javax.swing.JButton;
-    import javax.swing.JComboBox;
-    import javax.swing.JDialog;
-    import javax.swing.JLabel;
-    import javax.swing.JPanel;
-    import javax.swing.JScrollPane;
-    import javax.swing.JTable;
-    import javax.swing.JTextField;
-    import javax.swing.table.DefaultTableModel;
-
-    
-    
-    // This is for the float class that needs to be check out for
-    float totalFloatAmount = Float.parseFloat(Settings.get("floatamount").toString());
-    JDialog frameFloatSettings = new JDialog(frame, "Float Settings", true);
-    Object[] cnFloat = {"Type", "Amount"};
-    Object[][] dataFloat = null;
-    DefaultTableModel dtmFloatSettings = new DefaultTableModel(dataFloat, cnFloat);
-    JTable tableFloat = new JTable(dtmFloatSettings);
-    
-    JButton closeFloat, saveFloat, addItem, removeItem;
-    
-    String[] moneyvalues = {"£50", "£20", "£10", "£5", "£2", "£1", "50p", "20p", "10p", "5p", "2p", "1p"};
-    JComboBox jcb = new JComboBox(moneyvalues);
-    JTextField inputValue = new JTextField(7);
-    
-    String[] numBtnsTxt = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "00", "C"};
-    JButton[] numBtns = new JButton[numBtnsTxt.length];
-
-    public FloatSettings() {
-        renderFloatSettings();
-    }
-    
-    private void renderFloatSettings() {
-        // render Float Settings
-        JPanel tablePnl = new JPanel();
-        JPanel moneyInput = new JPanel();
-        JPanel btnsPnl = new JPanel();
-        JPanel numPadBtnsPnl = new JPanel();
-        
-        JLabel moneyLbl = new JLabel("Money Values");
-        moneyInput.add(moneyLbl);
-        moneyInput.add(jcb);
-        JLabel moneyQtyLbl = new JLabel("Money Qty");
-        moneyInput.add(moneyQtyLbl);
-        moneyInput.add(inputValue);
-        moneyInput.setLayout(new GridLayout(2, 2));
-        
-        
-        JScrollPane jspFloat = new JScrollPane(tableFloat);
-        // Add all the panel
-        tablePnl.add(jspFloat);
-        
-        for(int i = 0; i < numBtns.length; i++) {
-            // FLOAT SETTINGS
-            numBtns[i] = new JButton("" + numBtnsTxt[i]);
-            numBtns[i].addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
-                    
-                }
-            });
-            numPadBtnsPnl.add(numBtns[i]);
-        }
-        numPadBtnsPnl.setLayout(new GridLayout(4, 3));
-        
-        // Create the window control buttons
-        closeFloat = new JButton("Close");
-        closeFloat.addActionListener(this);
-        saveFloat = new JButton("Save");
-        saveFloat.addActionListener(this);
-        addItem = new JButton("Add");
-        addItem.addActionListener(this);
-        removeItem = new JButton("Remove");
-        removeItem.addActionListener(this);
-        
-        btnsPnl.add(closeFloat);
-        btnsPnl.add(saveFloat);
-        btnsPnl.add(addItem);
-        btnsPnl.add(removeItem);
-        
-        frameFloatSettings.add(tablePnl);
-        frameFloatSettings.add(moneyInput);
-        frameFloatSettings.add(numPadBtnsPnl);
-        frameFloatSettings.add(btnsPnl);
-        frameFloatSettings.setLayout(new FlowLayout());
-        
-        frameFloatSettings.setSize(650, 650);
-        frameFloatSettings.setVisible(true);
-        
-    } 
-}
-*/

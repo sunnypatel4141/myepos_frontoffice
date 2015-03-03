@@ -52,6 +52,15 @@ public class StaticObjects {
         return returnval;
     }
     
+    public float getCurrencyInFloat(String amountArg) {
+        return Float.parseFloat(getCurrency(amountArg));
+    }
+    
+    public float getCurrencyInFloat(float amountArg) {
+        String amountArgStr = "" + amountArg;
+        return Float.parseFloat(getCurrency(amountArgStr));
+    }
+    
     HashMap apprights = new HashMap();
     
     public boolean readRight(String app) {

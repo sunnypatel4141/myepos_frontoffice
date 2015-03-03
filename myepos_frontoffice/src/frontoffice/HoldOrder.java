@@ -17,6 +17,7 @@
 
 package frontoffice;
 
+import frontoffice.event.HoldEvent;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -37,7 +38,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Sunny Patel
  */
-class HoldOrder extends salesWindow implements ActionListener {
+class HoldOrder extends salesWindow implements ActionListener, HoldEvent {
     
     private int holdid = 0;
     private Vector SaleData = new Vector();
@@ -268,5 +269,9 @@ class HoldOrder extends salesWindow implements ActionListener {
                 a.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void holdSaleOrder(Vector saleTable) {
     }
 }

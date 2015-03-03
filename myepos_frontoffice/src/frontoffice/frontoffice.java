@@ -112,14 +112,17 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
             address = "IP: Unknown";
         }
         JLabel detailsLbl = new JLabel(address);
+        JPanel detailsPnl = new JPanel();
+        detailsPnl.add(detailsLbl);
         detailsLbl.setFont(h1);
         JPanel framep = new JPanel();
         BoxLayout bl = new BoxLayout(framep, BoxLayout.PAGE_AXIS);
-        framep.add(detailsLbl);
+        framep.add(detailsPnl);
         framep.add(detailPnl);
         framep.add(numPadPnl);
         framep.add(optsPnl);
         framep.setLayout(bl);
+        framep.setPreferredSize(new Dimension(350, 450));
         frame.add(framep);
         frame.setLayout(new FlowLayout());
         frame.setSize(1024, 786);
@@ -142,7 +145,7 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
             System.gc();
             System.exit(0);
         } else if ( aeObj == recovery ) {
-            CheckTables c = new CheckTables();
+            CheckTables c = new CheckTables(frame);
         }
         // Lets Iterate through the loop
         for(int i = 0; i < numberbtns.length; i++) {
@@ -188,18 +191,18 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
                     "' and loginpass='" + pwStr  +"' and canlogin='1';";
             conn = getConnection();
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql); 
+            rs = stmt.executeQuery(sql);
             while ( rs.next() ) {
                 Settings.put("username", rs.getString("firstname"));
                 Settings.put("userid", rs.getString("id"));
             }
             rs.close();
             if ( Settings.get("username") == null ) {
-                JOptionPane.showMessageDialog(frame, "Invalid user credentials", "Login Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Invalid user credentials", 
+                    "Login Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                //
-                // This is a view
-                sql = "select r, w, c, d from applicationright where loginID='" + 
+                // Typically all the rights should be loaded for the user
+                sql = "select r from applicationright where userid='" + 
                         Settings.get("userid").toString() + "' and apid = " +
                         "(select id from application where code = 'saleswindow')";
                 rs = stmt.executeQuery(sql);
@@ -208,13 +211,15 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
                 }
                 rs.close();
                 if ( Settings.get("saleswindow") == null ) {
-                    JOptionPane.showMessageDialog(frame, "Access Denied", "Access Denied", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Access Denied", 
+                        "Access Denied", JOptionPane.ERROR_MESSAGE);
                 } else {
                     allow = true;
                 }
             }
         } catch ( Exception a ) {
-            JOptionPane.showMessageDialog(frame, "Unable to Connect", "Login Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Unable to Connect", 
+                "Login Error", JOptionPane.ERROR_MESSAGE);
             a.printStackTrace();
         }
         return allow;
@@ -243,14 +248,20 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
                 // Get the results
                 floatid = rs.getInt("id");
             }
-            // get the opening Balance
+            // get the opening Balance of the last time this was active
             sql = "select * from cashdrawer where userid ='" + userid +
-                    "' and register='" + register + "' and created=curdate() - interval 1 day";
+                    "' and register='" + register + "' and created != curdate() " +
+                    "order by created desc limit 1";
             rs = stmt.executeQuery(sql);
             while(rs.next()) {
                 // Set the balance that was left yesterday
                 Settings.put("floatamountopening", rs.getString("amount"));
             }
+            // if this is a new instance then we need to set it to zero
+            if(!Settings.containsKey("floatamountopening")) {
+                Settings.put("floatamountopening", "0.00");
+            }
+            
             if( floatid == 0 ) {
                 // If float does not exist set it
                 String yesterdaybalance = Settings.get("floatamountopening").toString();

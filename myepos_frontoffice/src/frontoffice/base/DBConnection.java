@@ -84,7 +84,7 @@ public class DBConnection extends XMLSettings {
         // Convert integer password
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            if ( conn == null ) {
+            if ( conn == null || conn.isClosed() ) {
                 conn = DriverManager.getConnection(url, user, password);
             }
         } catch(Exception a) {

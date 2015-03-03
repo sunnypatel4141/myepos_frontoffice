@@ -19,12 +19,14 @@
 
 package frontoffice;
 
+import frontoffice.base.DBConnection;
+
 /**
  *
  * @author Sunny Patel
  */
 
-class SalesData {
+class SalesData extends DBConnection {
     private String S_ProductID;
     private String S_Description;
     private Integer S_Qty;
@@ -54,15 +56,16 @@ class SalesData {
     }
 
     public float getDiscount() {
-            return S_Discount;
+            return getCurrencyInFloat(S_Discount);
     }
 
     public float getUnitPrice() {
-            return S_Unit_Price;
+            return getCurrencyInFloat(S_Unit_Price);
     }
 
     public float getTotal() {
-            return S_Total;
+            setTotal(S_Total);
+            return getCurrencyInFloat(S_Total);
     }
 
     public void setProductID(String ProductID) {

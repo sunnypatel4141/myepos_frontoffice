@@ -16,6 +16,12 @@
  */
 package frontoffice;
 
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -24,50 +30,118 @@ import java.io.OutputStream;
  */
 
 //TODO: Maybe implement all of this under a perif class where it can be handled nicely
-public class LineDisplayGeneric extends salesWindow {
-/*
-    CommPort cp;
+// pLEase MULTI ThREAD THIS.... AS IT TAKES A WHILE TO ADD A PRODUCT
+public class LineDisplayGeneric extends salesWindow implements SerialPortEventListener {
+
+    CommPort commPortHandle;
     OutputStream out;
-    SerialReader input;
+    InputStream in;
     CommPortIdentifier portID;
     static int PortInUseInt = 0;
     int flushval = 0;
+    private byte[] buffer = new byte[1024];
+    private String buffer_string;
     
     public LineDisplayGeneric(String port) {
-        // We get to know whcih port to open the display at
+        // Create a generic Display Object
+        // TODO Expand this design
+        // In the unlikely event that this actually is used by a lot of people 
+        // we need make this the base class and expand around it
+        openPort(port);
+    }
+    
+    /**
+     * Open the provided Communications Port
+     * @param portName
+     * @return boolean
+     */
+    public boolean openPort(String portName) {
+        
         try {
-            portID.getPortIdentifier(port);
-            // Does someone own this yet?
-            if(portID.isCurrentlyOwned()) {
-                // No cannot use this
-            } else {
-                // Open the port
-                CP = portID.open(this.getClass().getName(), 2000);
-                if ( CP instanceof SerialPort ) {
-                    SerialPort SP = (SerialPort) CP;
-                    SP.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-                    
-                    InputStream in SP.getInputStream();
-                    out = SP.getOutputStream();
-                    
-                    input = new SerialReader(in);
-                    SP.addEventListener(input);
-                    SP.notifyOnDataAvailable(true);
-                    Thread.sleep(100);
-                }
+            CommPortIdentifier commPort = CommPortIdentifier.getPortIdentifier(portName);
+
+            // Is this port currently occupied
+            if (commPort.isCurrentlyOwned()) {
+                System.out.println("The port " + portName + " is currently opened elsewhere");
+                return false;
             }
+
+            commPortHandle = commPort.open(this.getClass().getName(), 2000);
+            
+            // Make sure that this is the serial Port
+            if (commPortHandle instanceof SerialPort ) {
+                
+                SerialPort serialPortHandle = (SerialPort) commPortHandle;
+                
+                serialPortHandle.setSerialPortParams(9600, SerialPort.DATABITS_8, 
+                        SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+                
+                out = serialPortHandle.getOutputStream();
+                in = serialPortHandle.getInputStream();
+
+                
+                serialPortHandle.addEventListener(this);
+                serialPortHandle.notifyOnDataAvailable(true);
+                
+                Thread.sleep(105); // cos i can
+            }
+        } catch (Exception a) {
+            a.printStackTrace();
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * writes out the lines to the display and then closes the port
+     */
+    public void closePort() {
+        try {
+            out.flush();
+            out.close();
+            in.close();
+        } catch(Exception a) {
+            a.printStackTrace();
+        }
+        
+        commPortHandle.close();
+    }
+    
+    /**
+     * Prove the line what you want with a end of line character
+     * this will display the lines on the screen the best it can
+     */
+    public void updateDisplay(String line) {
+        try {
+            out.write(line.getBytes());
         } catch(Exception a) {
             a.printStackTrace();
         }
     }
     
-    public void updateDisplay(String line) {
+    /**
+     * Close output Stream
+     * @param spe
+     */
+
+    @Override
+    public void serialEvent(SerialPortEvent spe) {
+        int data = 0;
         
+        try {
+            int len = 0;
+            while((data = in.read()) > -1) {
+                if (data == '\n') {
+                    break;
+                }
+                buffer[len++] = (byte) data;
+            }
+            buffer_string = new String(buffer, 0, len);
+            
+        } catch(Exception a) {
+            a.printStackTrace();
+        }
     }
     
-    
-    public void rebootThing() {
-        CP.close();
-    }
-    */
 }

@@ -73,7 +73,8 @@ public class XMLSettings extends StaticObjects {
                             "USBPort", 
                             "cashDrawer", 
                             "weightScale", 
-                            "printerCOM"
+                            "printerCOM",
+                            "cashDrawerType"
                         };
     
     void loadSettings() {

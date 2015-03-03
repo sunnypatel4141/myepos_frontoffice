@@ -162,7 +162,7 @@ class MainMenu extends salesWindow implements ActionListener {
     void floatcheck() {
         String floatamount = Settings.get("floatamount").toString();
         String floatamountopening = Settings.get("floatamountopening").toString();
-       FloatSettings fs = new FloatSettings(floatamount, floatamountopening);
+        FloatSettings fs = new FloatSettings(floatamount, floatamountopening);
     }
     
     void settings() {

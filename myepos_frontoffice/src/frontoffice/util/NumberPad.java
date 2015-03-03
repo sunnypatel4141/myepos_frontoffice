@@ -42,6 +42,7 @@ public class NumberPad implements ActionListener {
     JButton[] numBtns = new JButton[numTxt.length];
     JTextField value;
     JDialog frameNumPad;
+    JButton closeDialog;
 
     public NumberPad(FloatSettings aThis, JDialog frameArg) {
         npe = aThis;
@@ -64,6 +65,10 @@ public class NumberPad implements ActionListener {
         value = new JTextField(7);
         Font large = new Font("Verdana", Font.BOLD, 16);
         value.setFont(large);
+        
+        closeDialog = new JButton("Close");
+        closeDialog.addActionListener(this);
+        
         for(int i = 0; i < numTxt.length; i++) {
             numBtns[i] = new JButton(numTxt[i]);
             numBtns[i].addActionListener(this);
@@ -73,10 +78,11 @@ public class NumberPad implements ActionListener {
         btnPnl.setPreferredSize(new Dimension(300, 300));
         frameNumPad.add(value);
         frameNumPad.add(btnPnl);
+        frameNumPad.add(closeDialog);
         
         frameNumPad.setLayout(new FlowLayout());
-        frameNumPad.setLocation(350, 200);
-        frameNumPad.setSize(400, 400);
+        frameNumPad.setLocation(320, 200);
+        frameNumPad.setSize(350, 420);
         frameNumPad.setVisible(true);
         
     }
@@ -90,11 +96,19 @@ public class NumberPad implements ActionListener {
         
         Object trigger = e.getSource();
         
+        if( trigger == closeDialog) {
+            cleardownNumberPad();
+        }
+        
         for(int i = 0; i < numTxt.length; i++ ) {
             if(trigger == numBtns[i]) {
                 // Action for the type of button
                 if( numTxt[i].equals("OK")) {
-                    npe.numberPadEvent(value.getText());
+                    String inputText = value.getText();
+                    if(inputText.equals("")) {
+                        inputText = "0";
+                    }
+                    npe.numberPadEvent(inputText);
                     cleardownNumberPad();
                     //CLOSE THE BOX
                 } else if ( numTxt[i].equals("CLEAR") ) {

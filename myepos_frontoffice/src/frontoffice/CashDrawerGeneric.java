@@ -23,14 +23,16 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import jpos.POSPrinter;
 import jpos.CashDrawer;
+import jpos.JposException;
 /**
  *
  * @author Sunny Patel
  */
 class CashDrawerGeneric {
     
-    private String change = "";
     private int DRAWER_METHOD = 0; // This is the default menthod as controlled by the cashdrawer.bat file
+    private int DRAWER_METHOD_BATCH = 0;
+    private int DRAWER_METHOD_STAR_TSP = 1;
     private String DeviceName = "Star TSP100 Cutter (TSP143)";
     //System.setProperty(JposPropertiesConst.JPOS_POPULATOR_FILE_PROP_NAME, "jpos.xml");
     
@@ -38,16 +40,22 @@ class CashDrawerGeneric {
     CashDrawer drw;
     POSPrinter posPrinter;
     
+    /**
+     * Set the cashdrawer params 
+     */
     public CashDrawerGeneric(Object[] arg) {
-        change = arg[0].toString();
-        DRAWER_METHOD = Integer.parseInt(arg[1].toString());
-        if ( arg.length >= 2 ) {
-            DeviceName = arg[2].toString(); // the device name for the printer
+        DRAWER_METHOD = Integer.parseInt(arg[0].toString());
+        if ( arg.length >= 1 ) {
+            DeviceName = arg[1].toString(); // the device name for the printer
         }
     }
     
+    /**
+     * This will decide how to open the drawer 
+     * from the params specified when constructing this class
+     */
     public void openDrawer() {
-        if ( DRAWER_METHOD == 0 ) {
+        if ( DRAWER_METHOD == DRAWER_METHOD_BATCH ) {
             try {
                 // Just run the cashdrawer.bat
                 Process process = Runtime.getRuntime().exec("cashdrawer.bat");
@@ -56,7 +64,7 @@ class CashDrawerGeneric {
                 JOptionPane.showMessageDialog(null, "Cannot Open Drawer " + ex.getMessage(),
                         "Cannot Open Drawer", JOptionPane.ERROR_MESSAGE);
             }
-        } else if ( DRAWER_METHOD == 1 ) {
+        } else if ( DRAWER_METHOD == DRAWER_METHOD_STAR_TSP ) {
             openDrawerThroughStarTSP();
         }
     }
@@ -71,7 +79,13 @@ class CashDrawerGeneric {
         } catch( Exception a ) {
             JOptionPane.showMessageDialog(null, "Cannot Open Drawer " + a.getMessage(), 
                     "Drawer Error", JOptionPane.ERROR_MESSAGE );
-            a.printStackTrace();
+            Logger.getLogger(CashDrawerGeneric.class.getName()).log(Level.SEVERE, null, a);
+        }
+        // This seperate incase of errors above thus allows it to be ensured
+        try {
+            drw.close();
+        } catch (JposException ex) {
+            Logger.getLogger(CashDrawerGeneric.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

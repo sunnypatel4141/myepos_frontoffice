@@ -99,14 +99,17 @@ public class SalesTableModel extends AbstractTableModel implements Serializable 
         }
     }
 
+    @Override
     public String getColumnName(int col) {
             return colNames[col];
     }
 
+    @Override
     public Class getColumnClass(int col) {
             return colTypes[col];
     }
 
+    @Override
     public Object getValueAt(int row, int col)
     {
         SalesData salesData = (SalesData)(dataVector.elementAt(row));
@@ -122,6 +125,7 @@ public class SalesTableModel extends AbstractTableModel implements Serializable 
         return new String();
     }
 
+    @Override
     public boolean isCellEditable(int row, int column) {
             return true;
     }

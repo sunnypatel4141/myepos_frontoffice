@@ -17,11 +17,13 @@
 
 package frontoffice;
 
+import frontoffice.base.DBConnection;
+
 /**
  *
  * @author Sunny Patel
  */
-class Total {
+class Total extends DBConnection {
     private float total = 0.0f;
     private float discount = 0.0f;
     private int qty = 0;  
@@ -30,18 +32,23 @@ class Total {
         
     }
     
-    public void setTotal(Object arg) {
-        float totalAmt = Float.parseFloat(arg.toString()) + total;
+    /**
+     * If we pass in Unit Price and Qty 
+     * this class will calculate this automatically
+     */
+    public void setTotal(Object unitPriceArg, Object qtyArg) {
+        float unitAmt = Float.parseFloat(unitPriceArg.toString()) + total;
+        int unitQtyInt = Integer.parseInt(qtyArg.toString());
+        float totalAmt = unitQtyInt * unitAmt;
         total = totalAmt;
     }
     
     public float getTotal() {
-        // TODO: Implement Formatter here
-        return total - discount;
+        return getCurrencyInFloat(total - discount);
     }
     
     public float getSubTotal() {
-        return total;
+        return getCurrencyInFloat(total);
     }
     
     public void setDiscount(Object arg) {
@@ -51,7 +58,7 @@ class Total {
     
     public float getDiscount() {
         // TODO:: Implement Formatter here
-        return discount;
+        return getCurrencyInFloat(discount);
     }
     
     public void setQty(Object arg) {

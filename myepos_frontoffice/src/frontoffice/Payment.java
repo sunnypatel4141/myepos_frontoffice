@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2014 sunny
+ * Copyright (C) 2014 Sunny Patel
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -372,10 +372,11 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         }
         
         Settings.remove("customerid");
+        String drawerType = Settings.get("cashDrawerType").toString();
         // OK Open the cashDrawer and Show change
-        Object[] cdArg = {record[2], 1, "Star TSP100 Cutter (TSP143)"};
-        //CashDrawerGeneric cd = new CashDrawerGeneric(cdArg);
-        //cd.openDrawer();
+        Object[] cdArg = {drawerType, "Star TSP100 Cutter (TSP143)"};
+        CashDrawerGeneric cd = new CashDrawerGeneric(cdArg);
+        cd.openDrawer();
         showChange(amounts);
     }
     
@@ -390,10 +391,14 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
     @Override
     public void actionPerformed(ActionEvent ae) {
         Object caller = ae.getSource();
+        String amountToPayStr = amountToPay.getText();
         if ( caller == cash ) {
             String value = amountIn.getText();
             if ( !value.equals("") ) {
                 Object[] row = {"Cash", value};
+                addRowToTable(row);
+            } else {
+                Object[] row = {"Cash", amountToPayStr};
                 addRowToTable(row);
             }
         } else if ( caller == card ) {
@@ -401,17 +406,26 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
             if ( !value.equals("") ) {
                 Object[] row = {"Card", value};
                 addRowToTable(row);
+            } else {
+                Object[] row = {"Card", amountToPayStr};
+                addRowToTable(row);
             }
         } else if ( caller == voucher ) {
             String value = amountIn.getText();
             if ( !value.equals("") ) {
                 Object[] row = {"Voucher", value};
                 addRowToTable(row);
+            } else {
+                Object[] row = {"Voucher", amountToPayStr};
+                addRowToTable(row);
             }
         } else if ( caller == online ) {
             String value = amountIn.getText();
             if ( !value.equals("") ) {
                 Object[] row = {"On-Line", value};
+                addRowToTable(row);
+            } else {
+                Object[] row = {"On-Line", amountToPayStr};
                 addRowToTable(row);
             }
         } else if ( caller == account ) {
@@ -471,6 +485,51 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         changeDialog.setSize(300, 200);
         changeDialog.setLocation(400, 100);
         changeDialog.setVisible(true);
+        
+        String totalAmount = totalAmtLblStr;
+        
+        String lineone = getDisplayLine("Total " + totalAmount, (" " + totalAmount));
+        String linetwo = getDisplayLine("Change " + changeLblStr, (" " + changeLblStr));
+        outputToDisplay(lineone, linetwo);
+    }
+    
+    /**
+     * Send some data to the customer data
+     * This will safely open and close it 
+     */
+    private void outputToDisplay(String lineone, String linetwo) {
+        
+        LineDisplayGeneric ldg = new LineDisplayGeneric(Settings.get("COMPort").toString());
+        ldg.updateDisplay(lineone + linetwo);
+        ldg.closeLineDisplay();
+    }
+    /**
+     * Get the display line propertly formatted
+     * MandatoryArg is someting it must keep
+     * and can trim in to the rest of the line
+     */
+    private String getDisplayLine(String line, String mandatoryArg) {
+        // Trim to standards
+        if(line.length() > 20 ) {
+            // Let the length to trim
+            int amountToTrim = line.length() - 20;
+            line = line.substring(0, amountToTrim);
+            line += mandatoryArg;
+            
+        } else if(line.length() < 20) {
+            int amountToAdd = 20 - line.length();
+            // Hack to stop out mandatory arg form line
+            int frontOfLineIndex = line.length() - mandatoryArg.length();
+            line = line.substring(0, frontOfLineIndex);
+            // Lets just add the spaces
+            for(int i = 0; i < amountToAdd; i++) {
+                line = new StringBuffer(line).append(" ").toString();
+            }
+            
+            line += mandatoryArg;
+        }
+        
+        return line;
     }
     
     private void closeShowChange() {
