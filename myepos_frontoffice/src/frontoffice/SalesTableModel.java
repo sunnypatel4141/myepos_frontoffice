@@ -47,9 +47,9 @@ public class SalesTableModel extends AbstractTableModel implements Serializable 
     public Class[] colTypes = {String.class,
                                 String.class,
 				Integer.class,
-				float.class,
-				float.class,
-				float.class};
+				double.class,
+				double.class,
+				double.class};
     
     Vector dataVector;
 

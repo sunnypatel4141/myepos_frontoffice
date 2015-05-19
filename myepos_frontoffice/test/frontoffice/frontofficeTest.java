@@ -47,7 +47,7 @@ public class frontofficeTest extends DBConnection {
             while(rs.next()) {
                 userid = rs.getInt("id");
             }
-            sql = "insert into applicationright (`apid`, `loginID`, `r`, `w`, `c`, `d`) " +
+            sql = "insert into applicationright (`apid`, `userid`, `r`, `w`, `c`, `d`) " +
                     "values('1', '" + userid + "', '1', '1', '1', '1')";
             success = stmt.executeUpdate(sql);
         } catch (Exception a) {
@@ -73,7 +73,7 @@ public class frontofficeTest extends DBConnection {
         try {
             String sql = "delete from users where id='" + userid + "'";
             int success = stmt.executeUpdate(sql);
-            sql = "delete from applicationright where loginID='" + userid + "'";
+            sql = "delete from applicationright where userid='" + userid + "'";
             success = stmt.executeUpdate(sql);
         } catch (Exception a) {
             a.printStackTrace();

@@ -22,7 +22,6 @@
 
 package frontoffice;
 import frontoffice.base.DBConnection;
-import frontoffice.recovery.CheckTables;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -56,7 +55,7 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
     JTextField unFld, swpFld;
     JPasswordField pwFld;
     Integer focusfield;
-    JButton exitBtn, recovery;
+    JButton exitBtn;
     // All the user information
     
     void render() {
@@ -67,8 +66,6 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
         optsPnl = new JPanel();
         exitBtn = new JButton(new ImageIcon("Icons/system-shutdown.png"));
         exitBtn.addActionListener(this);
-        recovery = new JButton("Recovery", new ImageIcon("Icons/object-rotate-left.png"));
-        recovery.addActionListener(this);
         JLabel unFldLbl = new JLabel("User Name");
         unFldLbl.setFont(h1);
         unFld = new JTextField(14);
@@ -84,12 +81,11 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
         detailPnl.add(unFld);
         detailPnl.add(pwFldLbl);
         detailPnl.add(pwFld);
-        detailPnl.setLayout(new GridLayout(2, 2));
+        detailPnl.setLayout(new GridLayout(2, 2, 5, 5));
         detailPnl.setPreferredSize(new Dimension(200, 75));
+        detailPnl.setOpaque(false);
         
         optsPnl.add(exitBtn);
-        optsPnl.add(recovery);
-        
         
         // Numpad Render
         for ( int i = 0; i < numberbtns.length; i++ ) {
@@ -102,12 +98,12 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
         numbers[10].setIcon(new ImageIcon("Icons/edit-clear.png"));
         numbers[10].setText("");
         numbers[11].setIcon(new ImageIcon("Icons/go-next.png"));
-        numPadPnl.setLayout(new GridLayout(4, 3));
+        numPadPnl.setLayout(new GridLayout(4, 3, 5, 5));
         numPadPnl.setPreferredSize(new Dimension(300, 300));
         String address = "";
         try {
             InetAddress addObj = InetAddress.getLocalHost();
-            address = "IP: " + addObj.toString();
+            address = "IP: " + addObj.getHostAddress();
         } catch( UnknownHostException a ) {
             address = "IP: Unknown";
         }
@@ -117,12 +113,20 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
         detailsLbl.setFont(h1);
         JPanel framep = new JPanel();
         BoxLayout bl = new BoxLayout(framep, BoxLayout.PAGE_AXIS);
+        
         framep.add(detailsPnl);
         framep.add(detailPnl);
         framep.add(numPadPnl);
         framep.add(optsPnl);
         framep.setLayout(bl);
         framep.setPreferredSize(new Dimension(350, 450));
+        
+        //Set Opaque on the correct manor
+        optsPnl.setOpaque(false);
+        framep.setOpaque(false);
+        numPadPnl.setOpaque(false);
+        detailsPnl.setOpaque(false);
+        
         frame.add(framep);
         frame.setLayout(new FlowLayout());
         frame.setSize(1024, 786);
@@ -144,8 +148,6 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
             clearDown();
             System.gc();
             System.exit(0);
-        } else if ( aeObj == recovery ) {
-            CheckTables c = new CheckTables(frame);
         }
         // Lets Iterate through the loop
         for(int i = 0; i < numberbtns.length; i++) {
@@ -230,6 +232,7 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
         // Login to the main application
         setUpSession();
         loadSystemPrefs();
+        loadPeripherals();
         salesWindow sw = new salesWindow();
         sw.render();
     }
@@ -316,7 +319,6 @@ public class frontoffice extends DBConnection implements ActionListener, FocusLi
 
     @Override
     public void focusLost(FocusEvent fe) {
-       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     public static void main(String[] args) {
         frontoffice fo = new frontoffice();

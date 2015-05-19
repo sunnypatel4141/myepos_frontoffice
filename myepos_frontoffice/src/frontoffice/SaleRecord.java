@@ -148,7 +148,28 @@ class SaleRecord extends salesWindow {
                 pstmt.setObject(6, SaleDataRow.get(4));
                 pstmt.setObject(7, SaleDataRow.get(5));
                 pstmt.execute();
+                
+                int productQty = Integer.parseInt(SaleDataRow.get(2).toString());
+                String productID = SaleDataRow.get(0).toString();
+                updateProductQty(productID, productQty);
             }
+        } catch(Exception a) {
+            a.printStackTrace();
+        }
+    }
+    
+    /**
+     * Set the product qty when a product has been sold
+     * @parma productid
+     * @param qty
+     */
+    private void updateProductQty(String productid, int qty) {
+        try {
+            String sql = "update product set currentstock = currentstock - ? where id= ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, qty);
+            pstmt.setString(2, productid);
+            pstmt.executeUpdate();
         } catch(Exception a) {
             a.printStackTrace();
         }

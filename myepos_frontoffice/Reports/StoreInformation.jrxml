@@ -1,72 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="141" pageHeight="226" columnWidth="101" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6a37cc0c-9426-4f03-ba9c-f87cbe6e9b3a">
-	<property name="ireport.zoom" value="2.357947691000002"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StoreInformation" language="groovy" pageWidth="225" pageHeight="141" columnWidth="225" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="32f872d2-cd0d-4d3d-a06d-3d0b3cd4cfa9">
+	<property name="ireport.zoom" value="2.1435888100000016"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<subDataset name="Settigns_File" uuid="a0749331-ec39-4e83-84ab-f6054827a7d3"/>
-	<queryString language="xPath">
-		<![CDATA[settingsFile/general/*]]>
+	<queryString>
+		<![CDATA[select * from storeinfo]]>
 	</queryString>
-	<field name="companyName" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="storename" class="java.lang.String">
+		<fieldDescription><![CDATA[]]>
+        </fieldDescription>
 	</field>
-	<field name="address" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="buildingnameno" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="town" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="address1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="postCode" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="address2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="tel" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="postcode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="vat" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="e-mail" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="phone" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="web" class="java.lang.String">
-		<fieldDescription><![CDATA[child::text()]]></fieldDescription>
+	<field name="fax" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="webaddress" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
-		<band height="164" splitType="Stretch">
+		<band height="119">
 			<textField>
-				<reportElement x="0" y="1" width="100" height="20" uuid="279805d3-a430-4a02-8680-36b91f1ff3d3"/>
-				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
+				<reportElement x="0" y="0" width="225" height="13" uuid="f3aefe3b-683c-4df2-bf42-8ca97b312041"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{storename}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="21" width="100" height="20" uuid="f06bac31-1304-407e-80d6-f48dcef3a600"/>
-				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+				<reportElement x="0" y="13" width="225" height="13" uuid="7c9a40eb-f717-4cd5-8024-513441f8da09"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{buildingnameno}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="41" width="100" height="20" uuid="6aa150ef-0088-45dc-97e3-c74876456856"/>
-				<textFieldExpression><![CDATA[$F{town}]]></textFieldExpression>
+				<reportElement x="0" y="26" width="225" height="13" uuid="1865e5f8-f85e-4f2f-86ac-55e92602da4f"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{address1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="61" width="100" height="20" uuid="77bf362a-6c88-49f2-8ad8-f32ce7fcddc4"/>
-				<textFieldExpression><![CDATA[$F{postCode}]]></textFieldExpression>
+				<reportElement x="0" y="39" width="225" height="13" uuid="30e3cb9a-91dd-4b7b-86ea-1e14bcf35c10"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{address2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="81" width="100" height="20" uuid="b363b5b2-021a-42c5-a5ed-9ea25c7afb2b"/>
-				<textFieldExpression><![CDATA[$F{tel}]]></textFieldExpression>
+				<reportElement x="0" y="51" width="225" height="13" uuid="be609030-4d76-4cb8-9b52-f01954b55afa"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{postcode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="101" width="100" height="20" uuid="3021e161-4a64-4cf0-8e4f-533a6dceaf05"/>
+				<reportElement x="0" y="64" width="225" height="13" uuid="c71e1ebf-e062-4b3a-8a8a-e216487b9ad5"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{vat}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="121" width="100" height="20" uuid="e08e590c-8b8c-4ffc-9cb7-638e5c890009"/>
-				<textFieldExpression><![CDATA[$F{e-mail}]]></textFieldExpression>
+				<reportElement x="0" y="77" width="225" height="13" uuid="2dbbe67c-df39-43f2-ade5-eb2301f97240"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="141" width="100" height="20" uuid="27bcc8d8-f5e8-4dc1-8505-c40d21f17264"/>
-				<textFieldExpression><![CDATA[$F{web}]]></textFieldExpression>
+				<reportElement x="0" y="90" width="225" height="13" uuid="ccf5978e-4a64-451b-bfae-92e7e7000f05"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fax}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="103" width="225" height="13" uuid="7a494632-5a8e-4588-a581-5c7fac512830"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{webaddress}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

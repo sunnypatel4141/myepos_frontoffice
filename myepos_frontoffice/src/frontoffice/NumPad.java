@@ -52,6 +52,7 @@ public class NumPad extends salesWindow {
         for(int i = 0; i < numTxt.length; i++) {
             final String numCharStr = numTxt[i];
             numbers[i] = new JButton(numCharStr);
+            numbers[i].setFont(h1);
             numbers[i].addActionListener(new ActionListener() {
 
                 @Override

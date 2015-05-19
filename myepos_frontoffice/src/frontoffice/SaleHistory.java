@@ -16,6 +16,8 @@
  */
 package frontoffice;
 
+import frontoffice.Reports.CustomerReceipt;
+import static frontoffice.base.XMLSettings.Settings;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -125,17 +127,27 @@ public class SaleHistory extends MainMenu implements ActionListener, ListSelecti
         frameHistory.setVisible(true);
     }
     
-    private void getTransaction(Calendar SDateArg, Calendar EDateArg) {
-        Date sdate = new Date(SDateArg.getTimeInMillis());
-        Date edate = new Date(EDateArg.getTimeInMillis());
+    private void getTransactions(Calendar SDateArg, Calendar EDateArg) {
+        String sdate = new Date(SDateArg.getTimeInMillis()).toString();
+        String edate = new Date(EDateArg.getTimeInMillis()).toString();
         // Get tranactions for the days specified
         try {
-            String sql = "select `id`, `amounttopay`, `change`, `created`, `account`, " +
-                    " (cash + card + voucher + online + account ) as ttl " +
-                    "from sale where `created` between ? and ? order by `id`";
+            // Is you want data for a single day then the query is different
+            String sql;
+            if (sdate.equals(edate)) {
+                sql = "select `id`, `amounttopay`, `change`, `created`, `account`, " +
+                        " (cash + card + voucher + online + account ) as ttl " +
+                        "from sale where date(`created`) = ? order by `id`";
+            } else {
+                sql = "select `id`, `amounttopay`, `change`, `created`, `account`, " +
+                        " (cash + card + voucher + online + account ) as ttl " +
+                        "from sale where date(`created`) between ? and ? order by `id`";
+            }
             pstmt = conn.prepareStatement(sql);
-            pstmt.setDate(1, sdate);
-            pstmt.setDate(2, edate);
+            pstmt.setString(1, sdate.toString());
+            if(!sdate.equals(edate)) {
+                pstmt.setString(2, edate.toString());
+            }
             rs = pstmt.executeQuery();
             while( rs.next() ) {
                 float change = rs.getFloat("change") * -1;
@@ -180,6 +192,9 @@ public class SaleHistory extends MainMenu implements ActionListener, ListSelecti
         
         if(trigger == printRecieptHistory) {
             // Send this to the report queue
+            CustomerReceipt rp = new CustomerReceipt("Reports/CustomerReceipt.jrxml",
+            getSelectedRowTranscationID());
+        rp.printReport();
         } else if (trigger == closeHistory) {
             frameHistory.dispose();
         } else if (trigger == searchHistory) {
@@ -187,15 +202,22 @@ public class SaleHistory extends MainMenu implements ActionListener, ListSelecti
             sdate.setTime(sdmHistoryStart.getDate());
             Calendar edate = Calendar.getInstance();
             edate.setTime(sdmHistoryEnd.getDate());
-            getTransaction(sdate, edate);
+            getTransactions(sdate, edate);
         }
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        int selectedRow = tableHistory.getSelectedRow();
-        String transactionID = dtmHistory.getValueAt(selectedRow, 0).toString();
-        getTransactionByID(transactionID);
+        
+        getTransactionByID(getSelectedRowTranscationID());
     }
     
+    /**
+     * Common place to get transactionID
+     */
+    private String getSelectedRowTranscationID() {
+        int selectedRow = tableHistory.getSelectedRow();
+        String transactionID = dtmHistory.getValueAt(selectedRow, 0).toString();
+        return transactionID;
+    }
 }

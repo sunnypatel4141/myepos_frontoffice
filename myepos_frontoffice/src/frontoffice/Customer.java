@@ -363,7 +363,6 @@ public class Customer extends salesWindow implements ActionListener {
     }
     
     private void cleanupCustomerRec() {
-        System.out.println("Just Callesd the customer ercord");
         Component[] comp = customerRecordFrame.getComponents();
         for(int i = 0; i < comp.length; i ++) {
             customerRecordFrame.remove(comp[i]);

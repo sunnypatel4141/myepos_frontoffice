@@ -26,6 +26,8 @@ import frontoffice.event.MiscButtonEvent;
 import frontoffice.event.NumPadListener;
 import frontoffice.event.QuickKeyEvent;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -38,6 +40,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -55,6 +60,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -98,7 +104,6 @@ public class salesWindow extends DBConnection implements ActionListener,
     JButton[] subCatBtns = new JButton[50];
     JButton[] quickProducts = new JButton[150];
     // for keeping track of buttons issued
-    LineDisplayGeneric ldg;
     static int SC = 0;
     static int PR = 0;
     static int productPanel = 0;
@@ -156,6 +161,8 @@ public class salesWindow extends DBConnection implements ActionListener,
         paymentSuperPanel = new JPanel();
         paymentAmountPnl = new JPanel();
         payment = new JButton("Payment", new ImageIcon("Icons/pay.png"));
+        payment.setBackground(new Color(217, 30, 24));
+        payment.setForeground(Color.WHITE);
         payment.addActionListener(this);
         total = new JTextField(9);
         total.setFont(h1);
@@ -204,21 +211,6 @@ public class salesWindow extends DBConnection implements ActionListener,
         //searchPnl.add(searchProduct);
         searchPnl.setPreferredSize(new Dimension(200, 10));
         searchPnl.setLayout(new GridLayout(1, 2));
-    }
-    
-    /**
-     * Line Display loading so that we can close it gracefully.
-     */
-    private void loadLineDisplay() {
-        ldg = new LineDisplayGeneric("COM4");
-    }
-    
-    /**
-     * Close the line display gracefully so that we do not get port locking
-     * and memory leaks (even though they may be small)
-     */
-    public void closeLineDisplay() {
-        ldg.closePort();
     }
     
     /**
@@ -289,6 +281,19 @@ public class salesWindow extends DBConnection implements ActionListener,
         minusTool.addActionListener(this);
         delete = new JButton(new ImageIcon("Icons/window-close.png"));
         delete.addActionListener(this);
+        
+        // Setup the colors of these buttons
+        hold.setBackground(new Color(37, 116, 169));
+        hold.setForeground(Color.WHITE);
+        unhold.setBackground(new Color(37, 116, 169));
+        unhold.setForeground(Color.WHITE);
+        plusTool.setBackground(new Color(37, 116, 169));
+        plusTool.setForeground(Color.WHITE);
+        minusTool.setBackground(new Color(37, 116, 169));
+        minusTool.setForeground(Color.WHITE);
+        delete.setBackground(new Color(37, 116, 169));
+        delete.setForeground(Color.WHITE);
+        
         safesale = new JLabel("SAFE SALE");
         toolsPnl = new JPanel();
         toolsPnl.add(hold);
@@ -317,6 +322,8 @@ public class salesWindow extends DBConnection implements ActionListener,
         miscOptCallPnl.add(mb.getCallButtons());
         //payOut.addForeground(COlir)
         menu = new JButton("Menu");
+        menu.setBackground(new Color(68, 108, 179));
+        menu.setForeground(Color.WHITE);
         menu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -327,6 +334,8 @@ public class salesWindow extends DBConnection implements ActionListener,
         menuAndQKPnl.add(menu);
         //menu.setForeground(Color.BLUE);
         quickKeys = new JButton("Quick Keys");
+        quickKeys.setBackground(new Color(68, 108, 179));
+        quickKeys.setForeground(Color.WHITE);
         quickKeys.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -363,13 +372,13 @@ public class salesWindow extends DBConnection implements ActionListener,
     // Move this somewhere else
     void fetchProduct(String barcode) {
         try {
-            String sql = "select * from searchproducts where barcode='" + 
-                    barcode + "' ";
+            String sql = "select * from searchproducts where barcode = ? ";
             boolean foundproduct = false;
             // NORMALLY WE WANT TO SET TIMEOUT
             conn = getConnection();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, barcode);
+            rs = pstmt.executeQuery();
             Object[] row = new Object[6];
             while(rs.next()) {
                 foundproduct = true;
@@ -392,6 +401,26 @@ public class salesWindow extends DBConnection implements ActionListener,
                         updateTablePrice();
                         model.fireTableDataChanged();
                         updatedQty = true;
+                        
+                        // I want to color a duplicate scanned barcode
+                        final int finalIInt = i;
+                        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+                            @Override
+                            public Component getTableCellRendererComponent(JTable tableOther,
+                                    Object value, boolean isSelected, boolean hasFocus,
+                                    int row, int column) {
+                                Component c = super.getTableCellRendererComponent(tableOther, 
+                                        value, isSelected, hasFocus, finalIInt, column);
+                                if(row == finalIInt) {
+                                    c.setBackground(Color.ORANGE);
+                                } else {
+                                    c.setBackground(null);
+                                }
+                                
+                                return this;
+                            }
+                        });
+                        
                         break;
                     }
                 }
@@ -399,7 +428,8 @@ public class salesWindow extends DBConnection implements ActionListener,
                     insertRow(row);
                 }
             } else {
-                JOptionPane.showMessageDialog(frame, "Product not found!", 
+                String productNotFoundMessage = "<html><h1 style='color: red;'>Product Not Found!</h1></html>";
+                JOptionPane.showMessageDialog(frame, productNotFoundMessage,
                     "ERROR", JOptionPane.ERROR_MESSAGE);
             }
         } catch(Exception a) {
@@ -412,7 +442,11 @@ public class salesWindow extends DBConnection implements ActionListener,
      */
     public void quickKeyClick( String productIDArg ) {
         try {
-            String sql = "select * from searchproducts where prid='" + productIDArg + "'";
+            // TODO: move all this to the qickkeys view 
+            // This horrible join is needed because qk 
+            // products don't need a barcode to be products
+            String sql = "select * from product pr left join productprice pp " +
+                " on pr.id=pp.prid where pr.id='" + productIDArg + "'";
             rs = stmt.executeQuery(sql);
             while(rs.next()) {
                 Object[] row = {
@@ -441,24 +475,12 @@ public class salesWindow extends DBConnection implements ActionListener,
             String arg1 = args[0].toString();
             String arg2 = args[1].toString();
             Integer arg3 = Integer.parseInt(args[2].toString());
-            Float arg4 = Float.parseFloat(args[3].toString());
-            Float arg5 = Float.parseFloat(args[4].toString());
-            Float arg6 = Float.parseFloat(args[5].toString());
-            //boolean exists = false;
-            // Check to see if we need to update the qty
-            /*for(int i = 0; i < table.getRowCount(); i++) {
-                // Get the prouctid
-                String prid = model.getValueAt(i, 0).toString();
-                Integer modelQty = Integer.parseInt(model.getValueAt(i, 2).toString());
-                if(prid.equals(arg1)) {
-                    int newQty = arg3 + modelQty;
-                    model.setValueAt(newQty, i, 2);
-                    //exists = true;
-                }
-            }
-            */
-                // Add to the table
-                salesData.addElement(new SalesData(arg1, arg2, arg3, arg4, arg5, arg6));
+            double arg4 = Double.parseDouble(args[3].toString());
+            double arg5 = Double.parseDouble(args[4].toString());
+            double arg6 = Double.parseDouble(args[5].toString());
+            
+            // Add to the table
+            salesData.addElement(new SalesData(arg1, arg2, arg3, arg4, arg5, arg6));
             slsm.setSelection(table.getRowCount());
             updateTablePrice();
             model.fireTableDataChanged();
@@ -568,15 +590,26 @@ public class salesWindow extends DBConnection implements ActionListener,
         /*THIS IS FOR THE MAIN CLEAN UP ROUTINE SO WHEN A NEW SALE IS TO BE DONE*/
         try {
             int rowCount = model.getRowCount();
+            // Main place
             for(int i = 0; i < rowCount; i++) {
+                final int finalIInt = i;
+                table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(JTable tableOther,
+                            Object value, boolean isSelected, boolean hasFocus,
+                            int row, int column) {
+                        Component c = super.getTableCellRendererComponent(tableOther, 
+                                value, isSelected, hasFocus, finalIInt, column);
+                        c.setBackground(null);
+                        return this;
+                    }
+                });
                 model.removeRow(0);
             }
-            LineDisplayGeneric ldg = new LineDisplayGeneric(Settings.get("COMPort").toString());
             ldg.updateDisplay("NEXT CUSTOMER PLEASE                    ");
-            ldg.closeLineDisplay();
         } catch(Exception a) {
-            a.printStackTrace();
-            Object[] error = {"Cannot clean up ", "Clean Up Error", "error"};
+            //a.printStackTrace();
+            Object[] error = {"Cannot clean up " + a.getMessage(), "Clean Up Error", "error"};
             errorMessagePopup(error);
         }
     }
@@ -601,13 +634,18 @@ public class salesWindow extends DBConnection implements ActionListener,
         Object tsubtotal = t.getSubTotal();
         Object tqty = t.getQty();
         Object tdiscount = t.getDiscount();
-        total.setText(getCurrency(ttotal.toString()));
-        subtotal.setText(getCurrency(tsubtotal.toString()));
-        qty.setText(tqty.toString());
-        discount.setText(getCurrency(tdiscount.toString()));
+        DecimalFormat formatterDec = (DecimalFormat)NumberFormat.getNumberInstance(Locale.UK);
+        formatterDec.applyPattern("###,##0.00");
         
-        // Lets update the line display
-        updateCustomerDisplay();
+        total.setText(formatterDec.format(ttotal));
+        subtotal.setText(formatterDec.format(tsubtotal));
+        qty.setText(tqty.toString());
+        discount.setText(formatterDec.format(tdiscount));
+        
+        // Lets update the line display if there is any data
+        if (table.getRowCount() > 0) {
+            updateCustomerDisplay();
+        }
         // Set the focus to the barcode field
         searchFld.requestFocus();
     }
@@ -618,61 +656,70 @@ public class salesWindow extends DBConnection implements ActionListener,
      * It will identify the focused column and update the totals
      */
     private void updateCustomerDisplay() {
-        String line1 = "";
-        // Get the selectedRow or the last Row.
-        int row = slsm.getSelectedIndex();
-        if(row == -1) {
-            row = table.getRowCount();
-        }
-        String selectedProductName = model.getValueAt(row, 1).toString();
-        int selectedQty = getQty(row);
-        String lineone = selectedProductName + " * " + selectedQty;
-        
-        // Make it exactly 20 chars
-        if(lineone.length() > 20 ) {
-            // Work out amount to trim the name by
-            int amountToTrim = lineone.length() - 20;
-            String mandatoryStr = " * " + selectedQty;
-            selectedProductName = selectedProductName.substring(0, amountToTrim);
-            lineone = selectedProductName + mandatoryStr;
-        } else if (lineone.length() < 20) {
-            // Find out amount to add
-            int amountToAdd = 20 - lineone.length();
-            String mandatoryStr = " * " + selectedQty;
-            lineone = selectedProductName;
-            // Lets just add the spaces
-            for(int i = 0; i < amountToAdd; i++) {
-                lineone = new StringBuffer(lineone).append(" ").toString();
+        try {
+            String lineone = Settings.get("lineDisp").toString();
+            String linetwo = Settings.get("lineDisp2").toString();
+            // Get the selectedRow or the last Row.
+            int row = slsm.getSelectedIndex();
+            if(row == -1) {
+                row = table.getRowCount();
+                if (row == 0) {
+                    ldg.updateDisplay(lineone + linetwo);
+                    return;
+                }
             }
-            
-            lineone += mandatoryStr;
-        }
-        
-        String totalAmount = total.getText();
-        String linetwo = "Total " + totalAmount;
-        // Trim to standards
-        if(linetwo.length() > 20 ) {
-            // Let the length to trim
-            int amountToTrim = linetwo.length() - 20;
-            String mandatoryStr = " " + totalAmount;
-            linetwo = linetwo.substring(0, amountToTrim);
-            linetwo += mandatoryStr;
-            
-        } else if(linetwo.length() < 20) {
-            int amountToAdd = 20 - linetwo.length();
-            String mandatoryStr = " " + totalAmount;
-            linetwo = "Total";
-            // Lets just add the spaces
-            for(int i = 0; i < amountToAdd; i++) {
-                linetwo = new StringBuffer(linetwo).append(" ").toString();
+            String selectedProductName = model.getValueAt(row, 1).toString();
+            int selectedQty = getQty(row);
+            lineone = selectedProductName + " * " + selectedQty;
+
+            // Make it exactly 20 chars
+            if(lineone.length() > 20 ) {
+                // Work out amount to trim the name by
+                int excessAmount = lineone.length() - 20;
+                String mandatoryStr = " * " + selectedQty;
+                int amountToTrim = selectedProductName.length() - excessAmount;
+                selectedProductName = selectedProductName.substring(0, amountToTrim);
+                lineone = selectedProductName + mandatoryStr;
+            } else if (lineone.length() < 20) {
+                // Find out amount to add
+                int amountToAdd = 20 - lineone.length();
+                String mandatoryStr = " * " + selectedQty;
+                lineone = selectedProductName;
+                // Lets just add the spaces
+                for(int i = 0; i < amountToAdd; i++) {
+                    lineone = new StringBuffer(lineone).append(" ").toString();
+                }
+
+                lineone += mandatoryStr;
             }
-            
-            linetwo += mandatoryStr;
+
+            String totalAmount = total.getText();
+            linetwo = "Total " + totalAmount;
+            // Trim to standards
+            if(linetwo.length() > 20 ) {
+                // Let the length to trim
+                int excessAmount = linetwo.length() - 20;
+                String mandatoryStr = " " + totalAmount;
+                int amountToTrim = "Total".length() - excessAmount;
+                linetwo = linetwo.substring(0, amountToTrim);
+                linetwo += mandatoryStr;
+
+            } else if(linetwo.length() < 20) {
+                int amountToAdd = 20 - linetwo.length();
+                String mandatoryStr = " " + totalAmount;
+                linetwo = "Total";
+                // Lets just add the spaces
+                for(int i = 0; i < amountToAdd; i++) {
+                    linetwo = new StringBuffer(linetwo).append(" ").toString();
+                }
+
+                linetwo += mandatoryStr;
+            }
+
+            ldg.updateDisplay(lineone + linetwo);
+        } catch(Exception ex) {
+            System.err.println(ex.getCause());
         }
-        
-        LineDisplayGeneric ldg = new LineDisplayGeneric(Settings.get("COMPort").toString());
-        ldg.updateDisplay(lineone + linetwo);
-        ldg.closeLineDisplay();
     }
     
     /**
@@ -845,6 +892,7 @@ public class salesWindow extends DBConnection implements ActionListener,
         }
         updateTablePrice();
         model.fireTableDataChanged();
+        updateCustomerDisplay();
     }
     
     @Override
@@ -874,16 +922,15 @@ public class salesWindow extends DBConnection implements ActionListener,
                 continue;
             }
             
-            float priceFlt = Float.parseFloat(price);
+            float priceFlt = 0.000f;
+            priceFlt = Float.parseFloat(price);
             model.setValueAt(priceFlt, i, 4);
         }
     }
 
     @Override
     public void tableChanged(TableModelEvent tme) {
-      //  slsm.setSelection(table.getRowCount());
-       // ldg.updateDisplay(lastProdName);
-        //ldg.closePort();
+        // make Sure the totals are correct
         updateTotals();
         updateTableCheck();
     }
@@ -933,7 +980,6 @@ public class salesWindow extends DBConnection implements ActionListener,
     public void miscButtonEvent(Object[] rowArg) {
         // Every row is a new row
         insertRow(rowArg);
-        JTable tableNew = new JTable();
         //ListSelectionModel tableLSM = table.getSelectionModel();
         //tableLSM.setAnchorSelectionIndex(table.getRowCount());
     }
@@ -968,17 +1014,11 @@ public class salesWindow extends DBConnection implements ActionListener,
     @Override
     public void mousePressed(MouseEvent e) {
         int columnSelected = table.getSelectedColumn();
-        int rowSelected = slsm.getSelectedIndex();
-        
-        // Did we click outsite the allowed area?
-System.err.println(e.getX() + " y is " + e.getY());
-        if(e.getX() > 500 || e.getY() > 500) {
-            
-        }
         // Only Qty, UnitPrice and discount
         if(columnSelected == 2 || columnSelected == 3 || columnSelected == 4) {
-            
             NumPad np = new NumPad(this);
+            updateTablePrice();
+            model.fireTableDataChanged();
         }
     }
 

@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2014 Sunny Patel
+ * Copyright (C) 2014 sunny
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.Vector;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -62,7 +63,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
     JDialog changeDialog = new JDialog(paymentDialog, "Change", true);
     JPanel numPnl, optsPnl, tablePnl;
     JButton cash, card, voucher, online, account, deleteRow;
-    JButton pound5, pound10, pound20, pound50, exactChange;
+    JButton pound5, pound10, pound20, pound50, exactChange, wholeAmount;
     JTextField amountIn, amountToPay, amountPaid, amountTotal;
     String[] cn = {"Type", "Amount"};
     Object[][] data = null;
@@ -90,9 +91,9 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         JPanel numPnlIn = new JPanel();
         JPanel curBalancesPnl = new JPanel();
         mainPanel = new JPanel();
-        amountTotal = new JTextField("" + total, 10);
+        amountTotal = new JTextField(getLikeCurrency(total), 10);
         amountTotal.setFont(baseFont);
-        amountToPay = new JTextField("" + total , 10);
+        amountToPay = new JTextField(getLikeCurrency(total) , 10);
         amountToPay.setFont(baseFont);
         amountPaid = new JTextField("0.00", 10);
         amountPaid.setFont(baseFont);
@@ -109,6 +110,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         curBalancesPnl.setLayout(new GridLayout(3, 2));
         JPanel preDefPnl = new JPanel();
         pound5 = new JButton("£5");
+        pound5.setBackground(new Color(248, 148, 6));
         pound5.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -117,6 +119,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
             }
         });
         pound10 = new JButton("£10");
+        pound10.setBackground(new Color(248, 148, 6));
         pound10.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -125,6 +128,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
             }
         });
         pound20 = new JButton("£20");
+        pound20.setBackground(new Color(248, 148, 6));
         pound20.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -133,6 +137,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
             }
         });
         pound50 = new JButton("£50");
+        pound50.setBackground(new Color(248, 148, 6));
         pound50.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -149,15 +154,30 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
                 addRowToTable(row);
             }
         });
-        preDefPnl.add(pound5);
-        preDefPnl.add(pound10);
-        preDefPnl.add(pound20);
+        exactChange.setBackground(new Color(46, 204, 133));
+        wholeAmount = new JButton(getLikeCurrencyWhole(total));
+        wholeAmount.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                float balance = Float.parseFloat(getLikeCurrencyWhole(total)) * 100;
+                Object[] row = {"Cash", balance};
+                addRowToTable(row);
+            }
+        });
+        wholeAmount.setBackground(new Color(146, 124, 133));
+        
         preDefPnl.add(pound50);
+        preDefPnl.add(pound20);
+        preDefPnl.add(pound10);
+        preDefPnl.add(pound5);
         preDefPnl.add(exactChange);
-        preDefPnl.setLayout(new GridLayout(5, 1));
+        preDefPnl.add(wholeAmount);
+        preDefPnl.setLayout(new GridLayout(6, 1));
         for(int i = 0; i < numBtnTxt.length; i++) {
             final int j = i;
             numBtn[i] = new JButton(numBtnTxt[i]);
+            numBtn[i].setBackground(new Color(37, 116, 169));
+            numBtn[i].setForeground(Color.WHITE);
             numBtn[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -169,7 +189,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
             numPnlIn.add(numBtn[i]);
         }
         // You will never get the time back and so stop waisting it and get on with it
-        numPnlIn.setLayout(new GridLayout(4, 3));
+        numPnlIn.setLayout(new GridLayout(4, 3, 5, 5));
         numPnl.setLayout(new BorderLayout());
         numPnl.add(numPnlIn, BorderLayout.CENTER);
         amountIn = new JTextField(10);
@@ -178,16 +198,26 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         // Ok now for the rest of the buttons
         optsPnl = new JPanel();
         // Buttons for Payments
-        cash = new JButton("Cash");
+        cash = new JButton("Cash", new ImageIcon("Icons/money.png"));
         cash.addActionListener(this);
-        card = new JButton("Card");
+        cash.setBackground(new Color(37, 116, 169));
+        cash.setForeground(Color.WHITE);
+        card = new JButton("Card", new ImageIcon("Icons/visa.png"));
         card.addActionListener(this);
-        voucher = new JButton("Voucher");
+        card.setBackground(new Color(37, 116, 169));
+        card.setForeground(Color.WHITE);
+        voucher = new JButton("Voucher", new ImageIcon("Icons/tag.png"));
         voucher.addActionListener(this);
-        online = new JButton("On-Line");
+        voucher.setBackground(new Color(37, 116, 169));
+        voucher.setForeground(Color.WHITE);
+        online = new JButton("On-Line", new ImageIcon("Icons/wire-transfer.png"));
         online.addActionListener(this);
-        account = new JButton("Account");
+        online.setBackground(new Color(37, 116, 169));
+        online.setForeground(Color.WHITE);
+        account = new JButton("Account", new ImageIcon("Icons/clipboard.png"));
         account.addActionListener(this);
+        account.setBackground(new Color(37, 116, 169));
+        account.setForeground(Color.WHITE);
         optsPnl.add(cash);
         optsPnl.add(card);
         optsPnl.add(voucher);
@@ -233,6 +263,8 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         paymentDialog.add(backBtnPnl, BorderLayout.SOUTH);
         paymentDialog.add(preDefPnl, BorderLayout.EAST);
         paymentDialog.setSize(1024, 400);
+        paymentDialog.setLocation(0, 330);
+        paymentDialog.setUndecorated(true);
         paymentDialog.setVisible(true);
     }
     
@@ -313,8 +345,9 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         for(int i = 0; i < dtm.getRowCount(); i ++) {
             // Calculate Totals
             String amountStr = dtm.getValueAt(i, 1).toString();
-            float amountFlt = Float.parseFloat(amountStr) + totalbalance;
-            totalbalance = amountFlt;
+            float amountFlt = Float.parseFloat(amountStr);
+            // Increment the balance
+            totalbalance += amountFlt;
             String amountType = dtm.getValueAt(i, 0).toString();
             // Build the balances up
             if ( amountType.equals("Cash") ) {
@@ -330,13 +363,11 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
             }
         }
         float totalBalanceToPay = Float.parseFloat(amountTotal.getText());
-        amountPaid.setText("" + getCurrency("" + totalbalance));
+        amountPaid.setText(getLikeCurrency(totalbalance));
         float totalBalancePayed = Float.parseFloat(amountPaid.getText());
         outstandingbalance = totalBalanceToPay - totalBalancePayed;
-        Formatter fb = new Formatter(Locale.UK);
-        fb.format("%,.2f", outstandingbalance);
-        amountToPay.setText("" + fb);
-        exactChange.setText("" + fb);
+        amountToPay.setText(getLikeCurrency(outstandingbalance));
+        exactChange.setText(getLikeCurrency(outstandingbalance));
         // OK Balance is payed calc Change
         if ( outstandingbalance <= 0.00f ) {
             Object[] record = {totalBalanceToPay,
@@ -373,8 +404,9 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
         
         Settings.remove("customerid");
         String drawerType = Settings.get("cashDrawerType").toString();
+        String printerName = Settings.get("printer").toString();
         // OK Open the cashDrawer and Show change
-        Object[] cdArg = {drawerType, "Star TSP100 Cutter (TSP143)"};
+        Object[] cdArg = {drawerType, printerName};
         CashDrawerGeneric cd = new CashDrawerGeneric(cdArg);
         cd.openDrawer();
         showChange(amounts);
@@ -392,13 +424,15 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
     public void actionPerformed(ActionEvent ae) {
         Object caller = ae.getSource();
         String amountToPayStr = amountToPay.getText();
+        // This is created so that it's easy to use
+        Float amountToPayFlt = Float.parseFloat(amountToPayStr) * 100;
         if ( caller == cash ) {
             String value = amountIn.getText();
             if ( !value.equals("") ) {
                 Object[] row = {"Cash", value};
                 addRowToTable(row);
             } else {
-                Object[] row = {"Cash", amountToPayStr};
+                Object[] row = {"Cash", amountToPayFlt};
                 addRowToTable(row);
             }
         } else if ( caller == card ) {
@@ -407,7 +441,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
                 Object[] row = {"Card", value};
                 addRowToTable(row);
             } else {
-                Object[] row = {"Card", amountToPayStr};
+                Object[] row = {"Card", amountToPayFlt};
                 addRowToTable(row);
             }
         } else if ( caller == voucher ) {
@@ -416,7 +450,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
                 Object[] row = {"Voucher", value};
                 addRowToTable(row);
             } else {
-                Object[] row = {"Voucher", amountToPayStr};
+                Object[] row = {"Voucher", amountToPayFlt};
                 addRowToTable(row);
             }
         } else if ( caller == online ) {
@@ -425,7 +459,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
                 Object[] row = {"On-Line", value};
                 addRowToTable(row);
             } else {
-                Object[] row = {"On-Line", amountToPayStr};
+                Object[] row = {"On-Line", amountToPayFlt};
                 addRowToTable(row);
             }
         } else if ( caller == account ) {
@@ -456,41 +490,45 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
 
     private void showChange(Float[] amounts) {
         JButton changeOk = new JButton("OK");
+        changeOk.setBackground(new Color(38, 166, 91));
+        changeOk.setForeground(Color.WHITE);
+        changeOk.setFont(large);
         changeOk.addKeyListener(this);
-        String changeLblStr = getCurrency("" + (amounts[6] * -1));
-        String paidLblStr = getCurrency("" + amounts[5]);
+        String changeLblStr = getLikeCurrency((amounts[6] * -1));
+        String paidLblStr = getLikeCurrency(amounts[5]);
         JLabel changeLbl = new JLabel("Change: " + changeLblStr);
         changeLbl.setFont(large);
-        changeLbl.setForeground(new Color(150, 200, 50));
+        changeLbl.setForeground(new Color(242, 38, 19));
         JLabel paidLbl = new JLabel("Total: " + paidLblStr);
         paidLbl.setFont(large);
         Float TotalAmount = amounts[0] + amounts[1] + amounts[2] + amounts[3]
                 + amounts[4];
-        String totalAmtLblStr = getCurrency("" + TotalAmount);
+        String totalAmtLblStr = getLikeCurrency(TotalAmount);
         JLabel totalAmtLblAmt = new JLabel("Paid Total: " + totalAmtLblStr);
         totalAmtLblAmt.setFont(large);
         changeOk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                closeShowChange();
-                clearDown();
                 cleanup();
+                clearDown();
+                closeShowChange();
             }
         });
+        
+        // Set the display
+        String lineone = getDisplayLine("Total " + paidLblStr, (" " + paidLblStr));
+        String linetwo = getDisplayLine("Change " + changeLblStr, (" " + changeLblStr));
+        outputToDisplay(lineone, linetwo);
+        
         changeDialog.add(changeLbl);
         changeDialog.add(paidLbl);
         changeDialog.add(totalAmtLblAmt);
         changeDialog.setLayout(new GridLayout(4, 1));
         changeDialog.add(changeOk);
-        changeDialog.setSize(300, 200);
-        changeDialog.setLocation(400, 100);
+        changeDialog.setSize(1024, 400);
+        changeDialog.setLocation(0, 330);
+        changeDialog.setUndecorated(true);
         changeDialog.setVisible(true);
-        
-        String totalAmount = totalAmtLblStr;
-        
-        String lineone = getDisplayLine("Total " + totalAmount, (" " + totalAmount));
-        String linetwo = getDisplayLine("Change " + changeLblStr, (" " + changeLblStr));
-        outputToDisplay(lineone, linetwo);
     }
     
     /**
@@ -499,9 +537,7 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
      */
     private void outputToDisplay(String lineone, String linetwo) {
         
-        LineDisplayGeneric ldg = new LineDisplayGeneric(Settings.get("COMPort").toString());
         ldg.updateDisplay(lineone + linetwo);
-        ldg.closeLineDisplay();
     }
     /**
      * Get the display line propertly formatted
@@ -565,5 +601,10 @@ public class Payment extends salesWindow implements ActionListener, KeyListener 
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+    
+    @Override
+    void cleanup() {
+        super.cleanup();
     }
 }

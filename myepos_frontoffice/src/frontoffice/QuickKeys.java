@@ -19,12 +19,16 @@ package frontoffice;
 import frontoffice.base.DBConnection;
 import frontoffice.event.QuickKeyEvent;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 
 /**
  * This class holds the quick keys.
@@ -78,7 +82,9 @@ public class QuickKeys extends DBConnection implements ActionListener {
 
     private int mainCategoryCount = 49;
     private int subCategoryCount = 49;
-    private int productCount = 99;
+    private int productCount = 501;
+    private int productCounter = 0; // Keeps count of the total products
+    private int subCatCounter = 0;
     JButton[] MCBtn = new JButton[mainCategoryCount];
     JButton[] SCBtn = new JButton[subCategoryCount];
     JButton[] PRBtn = new JButton[productCount];
@@ -119,9 +125,8 @@ public class QuickKeys extends DBConnection implements ActionListener {
         try {
             String sql = "select count(*) from quickkeys";
             rs = stmt.executeQuery(sql);
-            String count = "0";
             while(rs.next()) {
-                count = rs.getString(1);
+                productCounter = rs.getInt(1);
                 load = true;
             }
         } catch(Exception a) {
@@ -136,13 +141,30 @@ public class QuickKeys extends DBConnection implements ActionListener {
     public JPanel loadQuickKeys() {
         JPanel mainPanel = new JPanel();
         try {
-            mainPanel.add(mcPnl);
-            mainPanel.add(scPnl);
-            mainPanel.add(prPnl);
+            JPanel productPnl = new JPanel();
+            JPanel catPnl = new JPanel();
+            
+            JScrollPane mcSP = new JScrollPane(mcPnl);
+            JScrollPane scSP = new JScrollPane(scPnl);
+            JScrollPane prSP = new JScrollPane(prPnl,
+                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            JScrollBar bar = prSP.getHorizontalScrollBar();
+            bar.setPreferredSize(new Dimension(20, 50));
+            prSP.setHorizontalScrollBar(bar);
+            //prSP.remove(bar);
+            
+            catPnl.add(scSP);
+            catPnl.add(mcSP);
+            catPnl.setLayout(new GridLayout(2, 1, 4, 4));
+            
+            mainPanel.add(prSP);
+            mainPanel.add(catPnl);
+            //mainPanel.add(bar);
             prPnl.setLayout(CLpr);
             scPnl.setLayout(CLsc);
             mainCategoryLoad(); //# this might need to be renamed so make it better
-            mainPanel.setLayout(new GridLayout(3, 1));
+            mainPanel.setLayout(new GridLayout(2, 10));
             mainPanel.setVisible(true);
         } catch(Exception a) {
             a.printStackTrace();
@@ -165,8 +187,9 @@ public class QuickKeys extends DBConnection implements ActionListener {
                 MCID.add(rs.getString("mcid"));
             }
             for(int i = 0; i < MCName.size(); i++) {
-                final String MCCountStr = "" + i;
+                final String MCCountStr = "" + (i + 1);
                 MCBtn[i] = new JButton(MCName.get(i));
+                MCBtn[i].setBackground(new Color(238, 238, 238));
                 MCBtn[i].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent ae) {
@@ -210,15 +233,11 @@ public class QuickKeys extends DBConnection implements ActionListener {
     
     /**
      * Load the sub Categories
-     * @param MCIDArg
      */
-    //# really need to remove the maincat id
     private void loadSubCategories() {
         try {
             //# loop thorugh the main cat id then assign a cardlayout foreach mcid
             for(int i = 0; i < MCID.size(); i++) {
-                // Create the static value for later reference
-                final String count = "" + i;
                 // Get all the button for this particular category
                 scIndPnl[i] = new JPanel();
                 String sql = "select distinct scid, scname from quickkeys " +
@@ -226,20 +245,23 @@ public class QuickKeys extends DBConnection implements ActionListener {
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery(sql);
                 while(rs.next()) {
+                    final String count = "" + (subCatCounter + 1);
                     SCName.add(rs.getString("scname"));
                     SCID.add(rs.getString("scid"));
-                    SCBtn[i] = new JButton(rs.getString("scname"));
-                    SCBtn[i].addActionListener(new ActionListener() {
+                    SCBtn[subCatCounter] = new JButton(rs.getString("scname"));
+                    SCBtn[subCatCounter].setBackground(new Color(210, 210, 210));
+                    SCBtn[subCatCounter].addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent ae) {
                             CLpr.show(prPnl, count);
                         }
                     });
-                    scIndPnl[i].add(SCBtn[i]);
+                    scIndPnl[i].add(SCBtn[subCatCounter]);
                     scIndPnl[i].setLayout(new GridLayout(3, 3));
+                    subCatCounter++;
                 }
                 // Add this with the card Layout so we know
-                scPnl.add(scIndPnl[i], count);
+                scPnl.add(scIndPnl[i], "" + (i + 1));
             }
             scPnl.setLayout(CLsc);
             scPnl.revalidate();
@@ -279,7 +301,7 @@ public class QuickKeys extends DBConnection implements ActionListener {
         // Load the requested sub category panel
         CLsc.show(scPnl, panelIDArg);
         // Load the product panel of this subcategory
-        CLpr.show(prPnl, panelIDArg);
+        //CLpr.show(prPnl, panelIDArg);
     }
     
     /**
@@ -292,24 +314,28 @@ public class QuickKeys extends DBConnection implements ActionListener {
         //# need to loopthrough all the sub categories and assign the cardlayout so that it can be called
         try {
             for(int i = 0; i < SCID.size(); i ++) {
-                final String count = "" + i;
+                final String count = "" + (i + 1);
                 prIndPnl[i] = new JPanel();
-                String sql = "select * from quickkeys where scid = '" + SCID.get(i) + "'";
+                
+                final String sql = "select * from quickkeys where scid = '" + SCID.get(i) + "'";
                 rs = stmt.executeQuery(sql);
                 while(rs.next()) {
                     PRName.add(rs.getString("prname"));
                     // For later use
                     final String prid = rs.getString("id");
                     PRID.add(prid);
-                    PRBtn[i] = new JButton(rs.getString("prname"));
-                    PRBtn[i].addActionListener(new ActionListener() {
+                    PRBtn[productCounter] = new JButton(rs.getString("prname"));
+                    PRBtn[productCounter].setBackground(new Color(170, 180, 180));
+                    PRBtn[productCounter].addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent ae) {
                             qke.quickKeyEvent(prid);
                         }
                     });
-                    prIndPnl[i].add(PRBtn[i]);
+                    
+                    prIndPnl[i].add(PRBtn[productCounter]);
                     prIndPnl[i].setLayout(new GridLayout(3, 3));
+                    productCounter++;
                 }
                 prPnl.add(prIndPnl[i], count);
             }

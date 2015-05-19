@@ -26,9 +26,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -44,7 +48,7 @@ class HoldOrder extends salesWindow implements ActionListener, HoldEvent {
     private Vector SaleData = new Vector();
     JDialog frameHold = new JDialog(frame, "Orders on Hold", true);
     private JButton selectOrder, deleteOrder, close;
-    private String[] cn = {"ID", "Till No", "Timestamp"};
+    private String[] cn = {"ID", "Till No", "Item Count", "Timestamp"};
     private Object[][] data = null;
     private DefaultTableModel dtmh = new DefaultTableModel(data, cn);
     private JTable tableHold = new JTable(dtmh);
@@ -65,20 +69,20 @@ class HoldOrder extends salesWindow implements ActionListener, HoldEvent {
      */
     public HoldOrder() {
         try {
-            String sql = "{call holdneworder(?)}";
-            CallableStatement cstmt = conn.prepareCall(sql);
-            Object tillObj = Settings.get("tillNumber");
-            String tillString = "";
-            if ( tillObj != null ) {
-                tillString = tillObj.toString();
+            String sql = "insert into hold (tillno, created, status) "
+                    + "values (?, current_timestamp(), '1')";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setObject(1, Settings.get("tillNumber"));
+            pstmt.executeUpdate();
+            
+            sql = "select * from hold order by id desc limit 1";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while(rs.next()) {
+                holdid = rs.getInt("id");
             }
-            cstmt.setString(1, tillString);
-            rs = cstmt.executeQuery();
-            while( rs.next() ) {
-                holdid = rs.getInt(1);
-            }
-        } catch (Exception a) {
-            a.printStackTrace();
+        } catch (SQLException ex) {
+            Logger.getLogger(HoldOrder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -93,8 +97,9 @@ class HoldOrder extends salesWindow implements ActionListener, HoldEvent {
         JPanel btnsHoldPnl = new JPanel();
 
         JScrollPane jspHold = new JScrollPane(tableHold);
-        jspHold.setPreferredSize(new Dimension(500, 400));
+        jspHold.setPreferredSize(new Dimension(450, 400));
         tableHoldPnl.add(jspHold);
+        tableHold.setRowHeight(25);
 
         selectOrder = new JButton("Select");
         selectOrder.addActionListener(this);
@@ -138,11 +143,16 @@ class HoldOrder extends salesWindow implements ActionListener, HoldEvent {
     
     public void getHeldOrders() {
         try {
-            String sql = "select * from hold where status='1'";
+            String sql = "select hl.id, hl.tillno, count(ho.productid) as itemcount, hl.created from hold hl "
+                    + "left join holdorder ho on ho.holdid=hl.id "
+                    + "where status='1' group by hl.id";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while(rs.next()) {
-                Object[] row = {rs.getString(1), rs.getString(2), rs.getString(4)};
+                Object[] row = {rs.getString("id"), 
+                    rs.getString("tillno"), 
+                    rs.getString("itemcount"),
+                    rs.getString("created")};
                 dtmh.addRow(row);
             }
         } catch(Exception a) {

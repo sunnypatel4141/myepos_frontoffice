@@ -39,7 +39,7 @@ import net.sf.jasperreports.swing.JRViewer;
  *
  * @author Sunny Patel
  */
-class Report extends DBConnection {
+public class Report extends DBConnection {
     JasperReport jRpt;
     JasperPrint jPrint;
     
@@ -58,6 +58,7 @@ class Report extends DBConnection {
     public Report(String rlArg) {
         ReportLocation = rlArg;
         RptEndName = rlArg;
+        compileReport();
     }
     
     public void compileReport() {

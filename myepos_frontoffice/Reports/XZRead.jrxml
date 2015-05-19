@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="XZRead" language="groovy" pageWidth="226" pageHeight="842" columnWidth="205" leftMargin="1" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ac4120e4-58e6-454c-9062-99b42907d710">
+	<property name="ireport.zoom" value="1.6105100000000017"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="234"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="lastread" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select mc.name as categoryname, sum(total) as total from saleitem si left join product pr on si.prid=pr.id left join maincategory mc on pr.mcid=mc.id where si.created between $P{lastread} and current_timestamp() group by pr.mcid]]>
+	</queryString>
+	<field name="categoryname" class="java.lang.String"/>
+	<field name="total" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="104" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="205" height="104" uuid="dc1f0b9e-400a-46fd-9ba5-e3e90a92e386"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "StoreInformation.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="18" uuid="4f832cd4-0a3d-4c76-901c-523b6b95b882"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Category Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="132" y="0" width="73" height="18" uuid="28b72915-e33b-4b56-8e63-aae1002df5b5"/>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="19" width="205" height="1" uuid="06b95b63-fb55-47f4-ab1c-2bd6e54ff531"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="132" height="18" uuid="bdd301a7-8be1-47ed-9c7a-fd9c70846c00"/>
+				<textFieldExpression><![CDATA[$F{categoryname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="132" y="0" width="73" height="18" uuid="c8f3d3b4-122d-4b2e-b714-701695851fee"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="148" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="11" width="205" height="137" uuid="ac3ceeb3-c10f-4ca3-a7f9-9b905434484b"/>
+				<subreportParameter name="lastread">
+					<subreportParameterExpression><![CDATA[$P{lastread}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "XZRead_Totals.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="4" width="205" height="1" uuid="a5f27b75-16b8-4a2c-94d3-273cf1410f3c"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

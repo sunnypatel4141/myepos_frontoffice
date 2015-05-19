@@ -31,8 +31,8 @@ import jpos.JposException;
 class CashDrawerGeneric {
     
     private int DRAWER_METHOD = 0; // This is the default menthod as controlled by the cashdrawer.bat file
-    private int DRAWER_METHOD_BATCH = 0;
-    private int DRAWER_METHOD_STAR_TSP = 1;
+    public int DRAWER_METHOD_BATCH = 0;
+    public int DRAWER_METHOD_STAR_TSP = 1;
     private String DeviceName = "Star TSP100 Cutter (TSP143)";
     //System.setProperty(JposPropertiesConst.JPOS_POPULATOR_FILE_PROP_NAME, "jpos.xml");
     
@@ -50,7 +50,7 @@ class CashDrawerGeneric {
         }
     }
     
-    /**
+    /**tsp100lm:5&amp;10344491&amp;0&amp;1
      * This will decide how to open the drawer 
      * from the params specified when constructing this class
      */

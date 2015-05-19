@@ -17,12 +17,22 @@
 
 package frontoffice;
 
-import frontoffice.recovery.Update;
+import frontoffice.Reports.CustomerReceipt;
+import frontoffice.Reports.ZLog;
+import frontoffice.Update;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -31,14 +41,17 @@ import javax.swing.JPanel;
  */
 class MainMenu extends salesWindow implements ActionListener {
     private JPanel menuPnl = new JPanel();
-    private JButton[] menuBtn = new JButton[11];
     private String[] menuTxt = {"Exit", "Update", "Z Read", "X Read", "Last Reciept", "History",
-        "End Of Day", "Float", "Settings", "Hourly Report", "Customer"};
+        "End Of Day", "Float", "Settings", "Hourly Report", "Customer", "No Sale", "Day Summary", 
+        "LD STOP", "LD START", "Search Product", "Clear Sale"};
+    private JButton[] menuBtn = new JButton[menuTxt.length];
     
     MainMenu() {
         for(int i = 0; i < menuTxt.length; i++) {
             final int j = i;
             menuBtn[i] = new JButton(menuTxt[i]);
+            menuBtn[i].setBackground(new Color(65, 131, 215));
+            menuBtn[i].setForeground(Color.WHITE);
             if(menuTxt[i].equals("Exit") ) {
                 menuBtn[i].setIcon(new ImageIcon("Icons/system-shutdown.png"));
             }
@@ -97,10 +110,41 @@ class MainMenu extends salesWindow implements ActionListener {
                             menuBtn[j].setEnabled(false);
                         }
                         customer();
-                    }                    
+                    } else if (menuTxt[j].equals("No Sale")) {
+                        if ( !readRight("nosale") ) {
+                            menuBtn[j].setEnabled(false);
+                        }
+                        nosale();
+                    } else if (menuTxt[j].equals("Day Summary")) {
+                        if (!readRight("daysummary")) {
+                            menuBtn[j].setEnabled(false);
+                        }
+                        dayreport();
+                    } else if (menuTxt[j].equals("LD STOP")) {
+                        if (!readRight("daysummary")) {
+                            menuBtn[j].setEnabled(false);
+                        }
+                        ldstop();
+                    } else if (menuTxt[j].equals("LD START")) {
+                        if (!readRight("daysummary")) {
+                            menuBtn[j].setEnabled(false);
+                        }
+                        ldstart();
+                    } else if (menuTxt[j].equals("Search Product")) {
+                        if (!readRight("daysummary")) {
+                            menuBtn[j].setEnabled(false);
+                        }
+                        searchproduct();
+                    } else if (menuTxt[j].equals("Clear Sale")) {
+                        if (!readRight("clearsale")) {
+                            menuBtn[j].setEnabled(false);
+                        }
+                        cleanup();
+                    }
                 }
             });
-            menuPnl.setLayout(new GridLayout(5, 3));
+            
+            menuPnl.setLayout(new GridLayout(5, 3, 2, 2));
             // Do some application rights checks
             if ( menuTxt[j].equals("Exit")) {
                 menuPnl.add(menuBtn[i]);
@@ -123,19 +167,33 @@ class MainMenu extends salesWindow implements ActionListener {
             } else if ( menuTxt[j].equals("Hourly Report") && readRight("hourlyreportmenubtn")) {
                 menuPnl.add(menuBtn[i]);
             } else if ( menuTxt[j].equals("Customer") && readRight("customer")) {
+                //menuPnl.add(menuBtn[i]);
+            } else if ( menuTxt[j].equals("No Sale") && readRight("nosale")) {
                 menuPnl.add(menuBtn[i]);
+            } else if ( menuTxt[j].equals("Day Summary") && readRight("daysummary")) {
+                menuPnl.add(menuBtn[i]);
+            } else if ( menuTxt[j].equals("LD STOP") && readRight("daysummary")) {
+                //menuPnl.add(menuBtn[i]);
+            } else if ( menuTxt[j].equals("LD START") && readRight("daysummary")) {
+                //menuPnl.add(menuBtn[i]);
+            } else if ( menuTxt[j].equals("Search Product") && readRight("daysummary")) {
+                menuPnl.add(menuBtn[i]);
+            } else if (menuTxt[j].equals("Clear Sale") && readRight("clearsale")) {
+                menuPnl.add(menuBtn[j]);
             }
         }
     }
     
-    JPanel getMenu() {
+    public JPanel getMenu() {
         return menuPnl;
     }
-    void close() {
+    
+    private void close() {
+        closePeripherals();
         System.exit(0);
     }
     
-    void update() {
+    private void update() {
         String cv = Settings.get("currentVersion").toString();
         String url = Settings.get("updateUrl").toString();
         boolean updateApproval = false; //flag for update approval and checking
@@ -143,45 +201,90 @@ class MainMenu extends salesWindow implements ActionListener {
         u.proceedWithUpdate();
     }
     
-    void zread() {
+    private void zread() {
 //        Report r = new Report();
+        ZLog zl = new ZLog(1);
     }
     
-    void xread() {
-        
+    private void xread() {
+        showFunctionSupressed();
     }
     
-    void lastrec() {
-        
+    private void lastrec() {
+        CustomerReceipt rp = new CustomerReceipt("Reports/CustomerReceipt.jrxml",
+            Settings.get("saleid").toString());
+        rp.printReport();
     }
     
-    void history() {
+    private void history() {
         SaleHistory sh = new SaleHistory();
     }
     
-    void floatcheck() {
+    private void floatcheck() {
         String floatamount = Settings.get("floatamount").toString();
         String floatamountopening = Settings.get("floatamountopening").toString();
         FloatSettings fs = new FloatSettings(floatamount, floatamountopening);
     }
     
-    void settings() {
-        
+    private void settings() {
+        showFunctionSupressed();
     }
     
-    void hourlyreport() {
-        
+    private void hourlyreport() {
+        Report r = new Report("Reports/HourlyReport.jrxml");
+        r.viewReport();
     }
     
-    void endofday() {
+    private void endofday() {
         EndOfDay eod = new EndOfDay();
     }
     
-    void customer() {
+    private void customer() {
         Customer c = new Customer();
+    }
+    
+    private void nosale() {
+        Object[] row = {Settings.get("cashDrawerType").toString(),
+            Settings.get("printer")};
+        CashDrawerGeneric cdg = new CashDrawerGeneric(row);
+        cdg.openDrawer();
+    }
+    
+    private void ldstop() {
+        System.err.println("Stopping Line Display");
+        try {
+            ldg.closePort();
+        } catch(Exception ex) {
+            System.err.println(ex.getCause());
+        }
+        System.err.println("Line Display Stopped");
+    }
+    
+    private void ldstart() {
+        System.err.println("Starting Line Display");
+        try {
+            ldg = new LineDisplayGeneric(Settings.get("COMPort").toString());
+        } catch(Exception ex) {
+            System.err.println(ex.getCause());
+        }
+        System.err.println("Line Display Started");
+    }
+    
+    private void searchproduct() {
+        SearchProduct sp = new SearchProduct();
+    }
+    
+    private void dayreport() {
+        Report r = new Report("Reports/DaySummary.jrxml");
+        r.viewReport();
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
+    }
+    
+    private void showFunctionSupressed() {
+        JOptionPane.showMessageDialog(null, "Function Supressed", 
+                "Function Supressed", JOptionPane.ERROR_MESSAGE);
     }
 }

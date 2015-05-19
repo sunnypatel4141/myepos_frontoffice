@@ -24,7 +24,7 @@
  * this way we can keep track of who did end of day (checked everything) and 
  * what the amounts were.
  * Once that is done it will print a receipt showing the amounts posted.
- * there will be an option to update the float with the cash lift.
+ * there will/might be an option to update the float with the cash lift.
 */
 package frontoffice;
 
@@ -63,7 +63,23 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
     
     JDialog frameeod = new JDialog(frame, "End Of Day", true);
     Object[] cneod = {"Type", "Count"};
-    Object[][] dataeod = null;
+    Object[][] dataeod = {
+        {"50", "0"},
+        {"20", "0"},
+        {"10", "0"},
+        {"5", "0"},
+        {"2", "0"},
+        {"1", "0"},
+        {"0.50", "0"},
+        {"0.20", "0"},
+        {"0.10", "0"},
+        {"0.05", "0"},
+        {"0.02", "0"},
+        {"0.01", "0"},
+    };
+    
+    // The payment Types
+    String cashStr, cardStr, onlineStr, voucherStr, accountStr;
     DefaultTableModel dtmeod = new DefaultTableModel(dataeod, cneod);
     JTable tableeod = new JTable(dtmeod);
     JTextField cashFld, cardFld, onlineFld, voucherFld,  accountFld, totalCashFld;
@@ -78,6 +94,15 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
      */
     public EndOfDay() {
         renderendofday();
+    }
+    
+    /**
+     * When we want to just update the end of day without entering any 
+     * information in to the GUI
+     * @param String callerClass
+     */
+    public EndOfDay(String callerClass) {
+        // don't do anything
     }
     
     private void renderendofday() {
@@ -153,8 +178,8 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
         frameeod.add(totalPnl);
         frameeod.add(btmPnl);
         
-        addAmountsToTable();
         loadAmounts();
+        addAmountsToTable();
         
         frameeod.setLayout(new FlowLayout());
         frameeod.setLocation(350, 200);
@@ -163,16 +188,20 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
     }
     
     /**
-     * So that we can control the denominations
+     * Adds the values to the GUI
     */
     private void addAmountsToTable() {
-        // Add Amounts to table
-        String[] amounts = {"50", "20", "10", "5", "2", "1", 
-            "0.50", "0.20", "0.10", "0.05", "0.02", "0.01"};
-        for(int i = 0; i < amounts.length; i++) {
-            Object[] row = {amounts[i], "0"};
-            dtmeod.addRow(row);
-        }
+        cashFld.setText(cashStr);
+        cardFld.setText(cardStr);
+        onlineFld.setText(onlineStr);
+        voucherFld.setText(voucherStr);
+        accountFld.setText(accountStr);
+        // Lock the fields
+        cashFld.setEnabled(false);
+        cardFld.setEnabled(false);
+        onlineFld.setEnabled(false);
+        voucherFld.setEnabled(false);
+        accountFld.setEnabled(false);
     }
     
     /**
@@ -188,18 +217,12 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
             rs = stmt.executeQuery(sql);
             while(rs.next()) {
                 // lets get all the things
-                cashFld.setText(rs.getString(1));
-                cardFld.setText(rs.getString(2));
-                onlineFld.setText(rs.getString(3));
-                voucherFld.setText(rs.getString(4));
-                accountFld.setText(rs.getString(5));
+                cashStr = rs.getString(1);
+                cardStr = rs.getString(2);
+                onlineStr = rs.getString(3);
+                voucherStr = rs.getString(4);
+                accountStr = rs.getString(5);
             }
-            // Lock the fields
-            cashFld.setEnabled(false);
-            cardFld.setEnabled(false);
-            onlineFld.setEnabled(false);
-            voucherFld.setEnabled(false);
-            accountFld.setEnabled(false);
         } catch(Exception a) {
             a.printStackTrace();
         }
@@ -272,6 +295,9 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
         frameeod.dispose();
     }
     
+    /**
+     * Updates the GUI got the end of day after an entry has been made
+     */
     private void updateEODTotals() {
         // Update EOD
         float totalBalance = 0.00f;
@@ -298,7 +324,6 @@ public class EndOfDay extends MainMenu implements NumberPadEvent,
             int decision = floatMsg.showOptionDialog(frameeod, 
                     "Do you want to update the float?", "Update Float", 
                     JOptionPane.YES_NO_CANCEL_OPTION, 3, null, options, null);
-            System.out.println("Get floatMsg " + decision);
             // Yes
             if( decision == 0 ) {
                 String floatamount = Settings.get("floatamount").toString();

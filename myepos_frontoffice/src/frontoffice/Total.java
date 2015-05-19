@@ -18,6 +18,9 @@
 package frontoffice;
 
 import frontoffice.base.DBConnection;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  *
@@ -28,8 +31,11 @@ class Total extends DBConnection {
     private float discount = 0.0f;
     private int qty = 0;  
     
+    DecimalFormat formatterDec = (DecimalFormat)
+        NumberFormat.getNumberInstance(Locale.UK);
+
     public Total() {
-        
+        formatterDec.applyPattern("###,###.00");
     }
     
     /**
@@ -37,14 +43,18 @@ class Total extends DBConnection {
      * this class will calculate this automatically
      */
     public void setTotal(Object unitPriceArg, Object qtyArg) {
-        float unitAmt = Float.parseFloat(unitPriceArg.toString()) + total;
+        float unitAmt = Float.parseFloat(unitPriceArg.toString());
         int unitQtyInt = Integer.parseInt(qtyArg.toString());
         float totalAmt = unitQtyInt * unitAmt;
-        total = totalAmt;
+        total += totalAmt;
     }
     
     public float getTotal() {
-        return getCurrencyInFloat(total - discount);
+        
+        double inputVal = total - discount;
+        String format = formatterDec.format(inputVal);
+        float returnVal = Float.parseFloat(format);
+        return returnVal;
     }
     
     public float getSubTotal() {

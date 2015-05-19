@@ -143,7 +143,7 @@ class DiscountCheck extends salesWindow {
         final Integer familyQty = getOtherQty(prid, grid, qty);
         // Create an Iteration to go through the prices Keys
         Object[] priceKeys = prices.keySet().toArray();
-        float thisPrice = 0.00f;
+        float thisPrice = 0.000f;
         int overflowQty = 0;
         int totalQty = familyQty;
         // Array refs atart at 0 and the length reports a count of 2 for [0, 1]
@@ -173,9 +173,10 @@ class DiscountCheck extends salesWindow {
         }
         
         float unitPrice = thisPrice / familyQty;
-
+        
         // Return a clean currency value
-        return getCurrency("" + unitPrice);
+        String val =  getCurrency("" + unitPrice);
+        return val;
     }
 
     /**

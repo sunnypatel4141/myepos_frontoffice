@@ -30,11 +30,11 @@ class SalesData extends DBConnection {
     private String S_ProductID;
     private String S_Description;
     private Integer S_Qty;
-    private float S_Discount;
-    private float S_Unit_Price;
-    private float S_Total;
+    private double S_Discount;
+    private double S_Unit_Price;
+    private double S_Total;
     
-    public SalesData(String ProductID, String Description, Integer Qty, float Discount, float Unit_Price, float Total) {
+    public SalesData(String ProductID, String Description, Integer Qty, double Discount, double Unit_Price, double Total) {
         Total = (Qty * Unit_Price) - Discount;
         S_Description = Description;
         S_Qty = Qty;
@@ -55,17 +55,17 @@ class SalesData extends DBConnection {
             return S_Qty;
     }
 
-    public float getDiscount() {
-            return getCurrencyInFloat(S_Discount);
+    public double getDiscount() {
+            return S_Discount;
     }
 
-    public float getUnitPrice() {
-            return getCurrencyInFloat(S_Unit_Price);
+    public double getUnitPrice() {
+            return S_Unit_Price;
     }
 
-    public float getTotal() {
+    public double getTotal() {
             setTotal(S_Total);
-            return getCurrencyInFloat(S_Total);
+            return S_Total;
     }
 
     public void setProductID(String ProductID) {
@@ -87,7 +87,7 @@ class SalesData extends DBConnection {
             S_Unit_Price = Unit_Price;
     }
 
-    public void setTotal(float Total) {
+    public void setTotal(double Total) {
             S_Total = (S_Qty * S_Unit_Price) - S_Discount;
     }
 }

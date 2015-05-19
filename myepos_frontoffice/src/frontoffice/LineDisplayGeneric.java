@@ -23,6 +23,7 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -38,6 +39,7 @@ public class LineDisplayGeneric extends salesWindow implements SerialPortEventLi
     InputStream in;
     CommPortIdentifier portID;
     static int PortInUseInt = 0;
+    private int TEST_MODE = 0; // Default is no
     int flushval = 0;
     private byte[] buffer = new byte[1024];
     private String buffer_string;
@@ -48,6 +50,18 @@ public class LineDisplayGeneric extends salesWindow implements SerialPortEventLi
         // In the unlikely event that this actually is used by a lot of people 
         // we need make this the base class and expand around it
         openPort(port);
+    }
+    
+    public LineDisplayGeneric(String port, String testMode) {
+        // Create a generic Display Object
+        // TODO Expand this design
+        // In the unlikely event that this actually is used by a lot of people 
+        // we need make this the base class and expand around it
+        if (testMode.equals("1")) {
+            TEST_MODE = 1;
+        } else {
+            openPort(port);
+        }
     }
     
     /**
@@ -86,6 +100,8 @@ public class LineDisplayGeneric extends salesWindow implements SerialPortEventLi
                 Thread.sleep(105); // cos i can
             }
         } catch (Exception a) {
+            JOptionPane.showMessageDialog(null, "Port Error: " + portName, 
+                "Comm Port Error", JOptionPane.ERROR_MESSAGE);
             a.printStackTrace();
             return false;
         }
@@ -98,6 +114,10 @@ public class LineDisplayGeneric extends salesWindow implements SerialPortEventLi
      */
     public void closePort() {
         try {
+            if (TEST_MODE == 1) {
+                System.err.println("Closing Port");
+                return;
+            }
             out.flush();
             out.close();
             in.close();
@@ -114,6 +134,10 @@ public class LineDisplayGeneric extends salesWindow implements SerialPortEventLi
      */
     public void updateDisplay(String line) {
         try {
+            if (TEST_MODE == 1) {
+                System.err.println(line);
+                return;
+            }
             out.write(line.getBytes());
         } catch(Exception a) {
             a.printStackTrace();

@@ -21,7 +21,9 @@ import frontoffice.base.DBConnection;
 import frontoffice.event.MiscButtonEvent;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -125,6 +127,9 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
                 mbe.miscButtonFocus("VAT");
             }
         });
+        vat.setBackground(new Color(68, 108, 179));
+        vat.setForeground(Color.WHITE);
+        
         callButtonsPnl.add(vat);
         JButton nonVat = new JButton("Non VAT");
         nonVat.addActionListener(new ActionListener() {
@@ -135,6 +140,9 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
                 mbe.miscButtonFocus("NON_VAT");
             }
         });
+        nonVat.setBackground(new Color(68, 108, 179));
+        nonVat.setForeground(Color.WHITE);
+        
         callButtonsPnl.add(nonVat);
         JButton payOut = new JButton("Pay Out");
         payOut.addActionListener(new ActionListener() {
@@ -145,6 +153,8 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
                 mbe.miscButtonFocus("PAY_OUT");
             }
         });
+        payOut.setBackground(new Color(68, 108, 179));
+        payOut.setForeground(Color.WHITE);
         callButtonsPnl.add(payOut);
         callButtonsPnl.setLayout(new GridLayout(1, 3));
         
@@ -172,6 +182,7 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
             for(int i = 0; i < btnInfo.size(); i++) {
                 final Vector info = (Vector) btnInfo.get(i);
                 taxBtn[i] = new JButton("" + info.get(0));
+                taxBtn[i].setBackground(Color.WHITE);
                 taxBtn[i].addActionListener(new ActionListener() {
                    @Override
                    public void actionPerformed(ActionEvent ae) {
@@ -217,6 +228,7 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
             for(int i = 0; i < btnInfo.size(); i++) {
                 final Vector info = (Vector) btnInfo.get(i);
                 nonTaxBtn[i] = new JButton("" + info.get(0));
+                nonTaxBtn[i].setBackground(Color.WHITE);
                 nonTaxBtn[i].addActionListener(new ActionListener() {
                    @Override
                    public void actionPerformed(ActionEvent ae) {
@@ -257,6 +269,7 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
             for(int i = 0; i < btnInfo.size(); i++) {
                 final Vector info = (Vector) btnInfo.get(i);
                 poBtn[i] = new JButton("" + info.get(0));
+                poBtn[i].setBackground(Color.WHITE);
                 poBtn[i].addActionListener(new ActionListener() {
                    @Override
                    public void actionPerformed(ActionEvent ae) {
@@ -282,14 +295,16 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
         JPanel returnPnl = new JPanel();
         JPanel padPnl = new JPanel();
         JPanel inputPnl = new JPanel();
-        JButton[] numBtn = new JButton[12];
-        final String[] numberbtns = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "CLEAR", "OK"};
+        final String[] numberbtns = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "00", "CLEAR"};
+        JButton[] numBtn = new JButton[numberbtns.length];
         inputPrice.setFont(h1);
         inputPnl.add(inputPrice);
+        inputPnl.setLayout(new GridLayout(2, 1));
         
         for(int i = 0; i < numberbtns.length; i++ ) {
             final String buttonText = numberbtns[i];
             numBtn[i] = new JButton(numberbtns[i]);
+            numBtn[i].setBackground(Color.WHITE);
             numBtn[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
@@ -303,8 +318,9 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
         }
         
         padPnl.setLayout(new GridLayout(4, 3));
-        returnPnl.add(inputPnl, BorderLayout.NORTH);
-        returnPnl.add(padPnl, BorderLayout.CENTER);
+        returnPnl.add(inputPnl);
+        returnPnl.add(padPnl);
+        returnPnl.setLayout(new FlowLayout());
         
         padPnl.setPreferredSize(new Dimension(300, 300));
         return returnPnl;
@@ -318,8 +334,6 @@ public class MiscButtons extends DBConnection  implements MiscButtonEvent {
         if ( input.equals("CLEAR") ) {
             // Must be Clear
             ret = "";
-        } else if ( input.equals("OK") ) {
-            // Must be OK to Submit
         } else {
             // Must be numbers
             ret = new StringBuffer().append(arg2).append(input).toString();

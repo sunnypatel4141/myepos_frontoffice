@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Blanks not allowed -->
 <settingsFile>
 <general>
+        <!-- Basic Settings -->
 	<companyName>My Project</companyName>
 	<address>My Store</address>
         <town>Awsome Town</town>
@@ -14,31 +16,36 @@
 	<footNote3>WITH US</footNote3>
 
 
-	<url>jdbc:mysql://localhost:3306/myepos</url>
+        <!-- Database Settings -->
+	<url>jdbc:mysql://domain.local:3306/myepos</url>
 	<user>myadmin</user>
-	<password>mypassword</password>
-	<databaseName>myepos</databaseName>
-	<port>:3306/</port>
-	<mainSrvB1>152</mainSrvB1>
-	<mainSrvB2>148</mainSrvB2>
-	<mainSrvB3>785</mainSrvB3>
-	<mainSrvB4>856</mainSrvB4>
-	<mainSrvPort>8569</mainSrvPort>
-	<mainSrvAdd>jdbc:mysql://localhost:3306/develop</mainSrvAdd>
+	<password>mysecretpassword</password>
+    <!--Backup Database Settings-->
+    <backupurl>jdbc:mysql://domain.backup:3306/myepos</backupurl>
+	<backupuser>myadmin</backupuser>
+	<backuppassword>mysecretpassword</backuppassword>
+        
+	<!-- The Socket Server configurations -->
+        <socketserver>localhost</socketserver>
+        <socketport>5555</socketport>
 	<tillNumber>1</tillNumber>
 
 
-	<printer>Star TSP(100) Cutter</printer>
+	<!-- Peripheral settings -->
+        <!-- FIXME -->
+        <printer>Star TSP100 Cutter (TSP143)1</printer>
 	<custDispCOM>true</custDispCOM>
-	<COMPort>COM7</COMPort>
+	<COMPort>COM1</COMPort>
 	<custDispUSB>false</custDispUSB>
-	<USBPort>1</USBPort>
 	<cashDrawer>CashDrawer</cashDrawer>
 	<weightScale>2</weightScale>
 	<printerCOM>1</printerCOM>
 	<lineDisp>Next Customer Please</lineDisp>
-        <lineDisp2></lineDisp2>
-<currentVersion>1.22452</currentVersion>
+        <lineDisp2>                    </lineDisp2>
+        <cashDrawerType>0</cashDrawerType><!-- 1 is Bash 2 is Star tsp -->
+<currentVersion>2.22</currentVersion>
+<updateURL>http://domain.local/somewhere</updateURL>
+<TestMode>0</TestMode><!-- A Flag so that we can handle this properly -->
 
 </general>
 
